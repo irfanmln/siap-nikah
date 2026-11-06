@@ -11,9 +11,10 @@ import {
   Heart,
   RefreshCw,
   Sparkles,
-  Crown
+  Crown,
+  Menu
 } from 'lucide-react';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import SettingsModal from './components/SettingsModal';
 import DashboardTab from './components/DashboardTab';
 import TabunganTab from './components/TabunganTab';
@@ -38,14 +39,14 @@ import {
 } from './utils/api';
 
 const TABS = [
-  { id: 'dashboard', label: 'Ringkasan', icon: LayoutDashboard },
-  { id: 'tabungan', label: 'Tabungan', icon: Wallet },
-  { id: 'seserahan', label: 'Seserahan', icon: Gift },
-  { id: 'mahar', label: 'Mahar', icon: Coins },
+  { id: 'dashboard', label: 'Ringkasan & Progres', icon: LayoutDashboard },
+  { id: 'tabungan', label: 'Tabungan Bersama', icon: Wallet },
   { id: 'wedding', label: 'Vendor & Resepsi', icon: Store },
+  { id: 'seserahan', label: 'Seserahan & Hantaran', icon: Gift },
+  { id: 'mahar', label: 'Mahar Pernikahan', icon: Coins },
   { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail },
-  { id: 'tamu', label: 'Daftar Tamu', icon: Users },
-  { id: 'afternikah', label: 'After Nikah', icon: Home }
+  { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users },
+  { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home }
 ];
 
 export default function App() {
@@ -76,6 +77,7 @@ export default function App() {
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [vipFeaturePrompt, setVipFeaturePrompt] = useState('');
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // Admin access check
   const ADMIN_EMAILS = ['irfanm991@gmail.com', 'halo.weddingplan@gmail.com'];
@@ -384,69 +386,133 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf8f5] w-full max-w-[100vw] overflow-x-hidden">
+    <div className="min-h-screen flex bg-[#faf8f5] w-full max-w-[100vw] overflow-x-hidden">
       
-      {/* Top Navbar */}
-      <Navbar
+      {/* Left Sidebar (Desktop Fixed + Mobile Slide Drawer) */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         metadata={db?.metadata}
         activeActor={activeActor}
         setActiveActor={setActiveActor}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenInvite={handleOpenInvite}
+        isPremium={isPremium}
         onOpenUpgradeVip={() => {
           setVipFeaturePrompt('');
           setIsVipModalOpen(true);
         }}
+        onOpenInvite={handleOpenInvite}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onDownloadExcel={handleDownloadExcel}
         isAdmin={isAdmin}
         onOpenAdmin={() => setIsAdminView(true)}
         user={user}
         onLogout={handleLogout}
+        badgeCounts={{
+          tabungan: db?.tabungan?.length,
+          seserahan: `${db?.seserahan?.filter(s => s.purchased)?.length || 0}/${db?.seserahan?.length || 0}`,
+          wedding: db?.wedding?.length,
+          mahar: db?.mahar?.length,
+          undangan: db?.undanganSouvenir?.length,
+          tamu: db?.tamuUndangan?.length,
+          afternikah: db?.afterNikah?.length
+        }}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
       />
 
-      {/* Main Tab Navigation Bar */}
-      <div className="sticky top-14 sm:top-20 z-20 bg-white/95 backdrop-blur-md border-b border-stone-200/60 shadow-2xs w-full max-w-full">
-        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-          <nav className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 sm:py-2.5 scrollbar-thin">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              
-              // Optional badge counts
-              let badge = null;
-              if (tab.id === 'tabungan') badge = db?.tabungan?.length;
-              if (tab.id === 'seserahan') badge = `${db?.seserahan?.filter(s => s.purchased)?.length || 0}/${db?.seserahan?.length || 0}`;
-              if (tab.id === 'wedding') badge = db?.wedding?.length;
-              if (tab.id === 'tamu') badge = db?.tamuUndangan?.length;
+      {/* Right Content Area */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        
+        {/* Mobile Header Bar (Sticky Top) */}
+        <header className="md:hidden sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-stone-200/80 px-4 py-3 flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsMobileOpen(true)}
+              className="p-2 -ml-1 text-stone-700 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition cursor-pointer"
+              aria-label="Buka Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-1.5">
+              <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
+              <span className="font-serif font-bold text-stone-900 text-sm">Siap Nikah</span>
+            </div>
+          </div>
 
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? 'bg-rose-500 text-white shadow-md shadow-rose-200/60 font-semibold scale-102'
-                      : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-white' : 'text-stone-400'}`} />
-                  <span>{tab.label}</span>
-                  {badge && (
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      isActive ? 'bg-white/25 text-white' : 'bg-stone-100 text-stone-500'
-                    }`}>
-                      {badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                const groomName = db?.metadata?.groom || 'Pria';
+                const brideName = db?.metadata?.bride || 'Wanita';
+                setActiveActor(activeActor === groomName ? brideName : groomName);
+              }}
+              className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition border border-stone-200/60"
+              title="Ganti Pengisi Data"
+            >
+              <span>{activeActor === (db?.metadata?.groom || 'Pria') ? '🤵' : '👰'}</span>
+              <span className="truncate max-w-[75px]">{activeActor}</span>
+            </button>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-1 w-full overflow-x-hidden">
+            {!isPremium && (
+              <button
+                onClick={() => {
+                  setVipFeaturePrompt('');
+                  setIsVipModalOpen(true);
+                }}
+                className="px-2 py-1 bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-lg text-[10px] font-bold shadow-xs cursor-pointer flex items-center gap-0.5"
+              >
+                <Crown className="w-3 h-3 fill-current" /> VIP
+              </button>
+            )}
+          </div>
+        </header>
+
+        {/* Desktop Top Bar */}
+        <header className="hidden md:flex sticky top-0 z-20 bg-white/85 backdrop-blur-md border-b border-stone-200/60 px-6 lg:px-8 py-3.5 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h1 className="text-base font-bold text-stone-900">
+              {TABS.find(t => t.id === activeTab)?.label || 'Dashboard'}
+            </h1>
+            <span className="text-xs text-stone-400 font-normal">
+              • {db?.metadata?.groom || 'Pria'} & {db?.metadata?.bride || 'Wanita'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center text-xs text-stone-600 bg-stone-100/80 px-3 py-1.5 rounded-xl border border-stone-200/50">
+              <span className="text-stone-400 mr-1.5">Pengisi Data:</span>
+              <button
+                onClick={() => {
+                  const groomName = db?.metadata?.groom || 'Pria';
+                  const brideName = db?.metadata?.bride || 'Wanita';
+                  setActiveActor(activeActor === groomName ? brideName : groomName);
+                }}
+                className="font-bold text-stone-800 hover:text-rose-600 flex items-center gap-1 cursor-pointer transition"
+                title="Klik untuk beralih antara Pria & Wanita"
+              >
+                <span>{activeActor === (db?.metadata?.groom || 'Pria') ? '🤵' : '👰'}</span>
+                <span>{activeActor}</span>
+                <span className="text-[10px] text-stone-400 ml-0.5 font-normal">(Ganti)</span>
+              </button>
+            </div>
+
+            {!isPremium && (
+              <button
+                onClick={() => {
+                  setVipFeaturePrompt('');
+                  setIsVipModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+              >
+                <Crown className="w-3.5 h-3.5 fill-current" />
+                <span>Upgrade VIP (Rp 45.000)</span>
+              </button>
+            )}
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full overflow-x-hidden">
         {activeTab === 'dashboard' && (
           <DashboardTab
             db={db}
@@ -558,7 +624,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-stone-200/80 py-5 text-center text-xs text-stone-400">
+      <footer className="bg-white border-t border-stone-200/80 py-5 text-center text-xs text-stone-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center space-x-2">
             <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
@@ -570,6 +636,8 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      </div>
 
       {/* Settings Modal */}
       <SettingsModal
