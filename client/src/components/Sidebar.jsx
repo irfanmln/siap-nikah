@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Wallet,
@@ -17,6 +17,7 @@ import {
   LogOut,
   Crown,
   ChevronRight,
+  ChevronDown,
   X,
   ArrowLeftRight,
   CalendarCheck,
@@ -28,6 +29,7 @@ import { getDaysUntil, formatDate } from '../utils/formatters';
 
 const NAV_SECTIONS = [
   {
+    id: 'utama',
     title: 'UTAMA',
     items: [
       { id: 'dashboard', label: 'Ringkasan & Progres', icon: LayoutDashboard },
@@ -35,6 +37,7 @@ const NAV_SECTIONS = [
     ]
   },
   {
+    id: 'persiapan',
     title: 'PERSIAPAN & HARI H',
     items: [
       { id: 'timeline', label: 'Timeline & Checklist', icon: CalendarCheck, badgeKey: 'timeline' },
@@ -42,6 +45,7 @@ const NAV_SECTIONS = [
     ]
   },
   {
+    id: 'anggaran',
     title: 'RINCIAN ANGGARAN',
     items: [
       { id: 'wedding', label: 'Vendor & Resepsi', icon: Store, badgeKey: 'wedding' },
@@ -51,6 +55,7 @@ const NAV_SECTIONS = [
     ]
   },
   {
+    id: 'tamu_legal',
     title: 'TAMU, SERAGAM & LEGAL',
     items: [
       { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users, badgeKey: 'tamu' },
@@ -83,6 +88,37 @@ export default function Sidebar({
   const groomName = metadata?.groom || 'Pria';
   const brideName = metadata?.bride || 'Wanita';
   const daysRemaining = getDaysUntil(metadata?.weddingDate);
+
+  const findSectionForTab = (tabId) => {
+    return NAV_SECTIONS.find(sec => sec.items.some(item => item.id === tabId))?.id || 'utama';
+  };
+
+  // State dropdown accordion tiap section
+  const [openSections, setOpenSections] = useState(() => {
+    const activeSecId = findSectionForTab(activeTab);
+    return {
+      utama: true,
+      persiapan: activeSecId === 'persiapan',
+      anggaran: activeSecId === 'anggaran',
+      tamu_legal: activeSecId === 'tamu_legal'
+    };
+  });
+
+  // Otomatis buka accordion section jika tab aktif berubah
+  useEffect(() => {
+    const activeSecId = findSectionForTab(activeTab);
+    setOpenSections(prev => ({
+      ...prev,
+      [activeSecId]: true
+    }));
+  }, [activeTab]);
+
+  const toggleSection = (sectionId) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   const toggleActor = () => {
     if (activeActor === groomName) {
@@ -201,47 +237,79 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* Navigation Sections */}
-        <nav className="space-y-4">
-          {NAV_SECTIONS.map((section) => (
-            <div key={section.title}>
-              <h4 className="text-[10px] font-bold text-stone-400 uppercase tracking-wider px-3 mb-1.5">
-                {section.title}
-              </h4>
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === item.id;
-                  const badge = badgeCounts[item.badgeKey];
+        {/* Navigation Sections with Collapsible Accordion / Dropdown */}
+        <nav className="space-y-1.5">
+          {NAV_SECTIONS.map((section) => {
+            const isOpen = Boolean(openSections[section.id]);
+            const hasActiveItem = section.items.some(item => item.id === activeTab);
 
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSelectTab(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
-                        isActive
-                          ? 'bg-rose-500 text-white shadow-sm shadow-rose-200 font-bold'
-                          : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+            return (
+              <div key={section.id} className="rounded-xl transition">
+                {/* Accordion / Dropdown Header Button */}
+                <button
+                  type="button"
+                  onClick={() => toggleSection(section.id)}
+                  className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/70 transition cursor-pointer select-none group"
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500 group-hover:text-stone-800 truncate">
+                      {section.title}
+                    </span>
+                    {hasActiveItem && !isOpen && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 animate-pulse" title="Menu aktif ada di dalam" />
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 text-stone-400 shrink-0">
+                    <span className="text-[10px] font-medium text-stone-400 bg-stone-100 px-1.5 py-0.2 rounded-md">
+                      {section.items.length}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 group-hover:text-stone-600 ${
+                        isOpen ? 'rotate-0' : '-rotate-90'
                       }`}
-                    >
-                      <div className="flex items-center space-x-2.5 min-w-0">
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-stone-400'}`} />
-                        <span className="truncate">{item.label}</span>
-                      </div>
+                    />
+                  </div>
+                </button>
 
-                      {badge && (
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ${
-                          isActive ? 'bg-white/25 text-white' : 'bg-stone-200/80 text-stone-600'
-                        }`}>
-                          {badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
+                {/* Submenu Dropdown Items */}
+                {isOpen && (
+                  <div className="space-y-0.5 pt-0.5 pb-1 pl-1 border-l-2 border-stone-200/60 ml-3.5 my-0.5 animate-in slide-in-from-top-1 fade-in duration-150">
+                    {section.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = activeTab === item.id;
+                      const badge = badgeCounts[item.badgeKey];
+
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => handleSelectTab(item.id)}
+                          className={`w-full flex items-center justify-between px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                            isActive
+                              ? 'bg-rose-500 text-white shadow-sm shadow-rose-200 font-bold'
+                              : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2.5 min-w-0">
+                            <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-stone-400'}`} />
+                            <span className="truncate">{item.label}</span>
+                          </div>
+
+                          {badge && (
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold shrink-0 ${
+                              isActive ? 'bg-white/25 text-white' : 'bg-stone-200/80 text-stone-600'
+                            }`}>
+                              {badge}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </nav>
 
       </div>
