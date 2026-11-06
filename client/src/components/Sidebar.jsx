@@ -18,7 +18,11 @@ import {
   Crown,
   ChevronRight,
   X,
-  ArrowLeftRight
+  ArrowLeftRight,
+  CalendarCheck,
+  Clock,
+  FileText,
+  Shirt
 } from 'lucide-react';
 import { getDaysUntil, formatDate } from '../utils/formatters';
 
@@ -31,6 +35,13 @@ const NAV_SECTIONS = [
     ]
   },
   {
+    title: 'PERSIAPAN & HARI H',
+    items: [
+      { id: 'timeline', label: 'Timeline & Checklist', icon: CalendarCheck, badgeKey: 'timeline' },
+      { id: 'rundown', label: 'Rundown Acara Hari H', icon: Clock, badgeKey: 'rundown' }
+    ]
+  },
+  {
     title: 'RINCIAN ANGGARAN',
     items: [
       { id: 'wedding', label: 'Vendor & Resepsi', icon: Store, badgeKey: 'wedding' },
@@ -40,9 +51,11 @@ const NAV_SECTIONS = [
     ]
   },
   {
-    title: 'TAMU & PASCA NIKAH',
+    title: 'TAMU, SERAGAM & LEGAL',
     items: [
       { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users, badgeKey: 'tamu' },
+      { id: 'seragam', label: 'Rekap Seragam & Panitia', icon: Shirt, badgeKey: 'seragam' },
+      { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText, badgeKey: 'legal' },
       { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home, badgeKey: 'afternikah' }
     ]
   }

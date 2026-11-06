@@ -40,6 +40,102 @@ const DEFAULT_BUDGET_TEMPLATES = [
   { module: 'afterNikah', category: 'Darurat', name: 'Dana Darurat Rumah Tangga Awal', target_cost: 5000000 }
 ];
 
+// Template Checklist Timeline Berdasarkan Waktu
+const DEFAULT_TIMELINE_TEMPLATES = [
+  // H-12 Bulan
+  { phase: 'H-12 Bulan', title: 'Tentukan tanggal pernikahan & konsep acara (Adat / Modern / Intimate)', assigned_to: 'Bersama' },
+  { phase: 'H-12 Bulan', title: 'Tentukan estimasi total anggaran & target tabungan bersama', assigned_to: 'Bersama' },
+  { phase: 'H-12 Bulan', title: 'Pertemuan keluarga besar (Lamaran / Perkenalan Keluarga)', assigned_to: 'Keluarga' },
+  { phase: 'H-12 Bulan', title: 'Survey dan booking gedung / venue pernikahan', assigned_to: 'Bersama' },
+  
+  // H-6 Bulan
+  { phase: 'H-6 Bulan', title: 'Booking MUA, Hairdo/Hijab do, & Busana Pengantin / Orang Tua', assigned_to: 'Wanita' },
+  { phase: 'H-6 Bulan', title: 'Pilih & booking vendor Katering (Food tasting)', assigned_to: 'Bersama' },
+  { phase: 'H-6 Bulan', title: 'Booking vendor Dekorasi Pelaminan & Ruangan', assigned_to: 'Bersama' },
+  { phase: 'H-6 Bulan', title: 'Booking vendor Fotografi & Videografi Liputan', assigned_to: 'Pria' },
+  { phase: 'H-6 Bulan', title: 'Pilih & booking Wedding Organizer (WO) Hari H', assigned_to: 'Bersama' },
+  
+  // H-3 Bulan
+  { phase: 'H-3 Bulan', title: 'Pesan Cincin Kawin & Ukir Nama', assigned_to: 'Bersama' },
+  { phase: 'H-3 Bulan', title: 'Beli / kumpulkan barang Seserahan & Hantaran', assigned_to: 'Pria' },
+  { phase: 'H-3 Bulan', title: 'Beli Mahar Pernikahan (Logam Mulia / Uang Mahar)', assigned_to: 'Pria' },
+  { phase: 'H-3 Bulan', title: 'Pilih & pesan Souvenir Tamu', assigned_to: 'Wanita' },
+  { phase: 'H-3 Bulan', title: 'Pesan Undangan Digital & Cetak Fisik', assigned_to: 'Bersama' },
+  { phase: 'H-3 Bulan', title: 'Beli bahan kain seragam keluarga & bridesmaid', assigned_to: 'Wanita' },
+
+  // H-1 Bulan
+  { phase: 'H-1 Bulan', title: 'Urus berkas pendaftaran nikah di KUA / Catatan Sipil', assigned_to: 'Bersama' },
+  { phase: 'H-1 Bulan', title: 'Pemeriksaan kesehatan pranikah (Puskesmas / Elsimil)', assigned_to: 'Bersama' },
+  { phase: 'H-1 Bulan', title: 'Fitting final busana pengantin & orang tua', assigned_to: 'Bersama' },
+  { phase: 'H-1 Bulan', title: 'Finalisasi daftar tamu undangan & porsi katering', assigned_to: 'Bersama' },
+  { phase: 'H-1 Bulan', title: 'Distribusikan bahan kain seragam ke keluarga & bridesmaid', assigned_to: 'Wanita' },
+
+  // H-2 Minggu
+  { phase: 'H-2 Minggu', title: 'Sebar undangan digital & fisik ke para tamu', assigned_to: 'Bersama' },
+  { phase: 'H-2 Minggu', title: 'Technical Meeting (TM) seluruh vendor & panitia keluarga', assigned_to: 'WO' },
+  { phase: 'H-2 Minggu', title: 'Konfirmasi kehadiran saksi nikah dari kedua pihak', assigned_to: 'Pria' },
+
+  // H-1 Minggu
+  { phase: 'H-1 Minggu', title: 'Gladi kotor / review rundown acara bersama keluarga inti', assigned_to: 'Bersama' },
+  { phase: 'H-1 Minggu', title: 'Perawatan diri & istirahat yang cukup', assigned_to: 'Bersama' },
+  { phase: 'H-1 Minggu', title: 'Siapkan amplop tips / honor pelunasan vendor', assigned_to: 'Pria' },
+  { phase: 'H-1 Minggu', title: 'Cek kelengkapan mahar, cincin kawin, seserahan, & berkas', assigned_to: 'Bersama' },
+
+  // Hari H
+  { phase: 'Hari H', title: 'Bangun pagi, sarapan bernutrisi & hidrasi cukup', assigned_to: 'Bersama' },
+  { phase: 'Hari H', title: 'Sesi Make Up & Hairdo tepat waktu', assigned_to: 'Wanita' },
+  { phase: 'Hari H', title: 'Pastikan mahar & cincin kawin standby di meja akad', assigned_to: 'Pria' },
+  { phase: 'Hari H', title: 'Fokus nikmati momen bahagia & tetap tersenyum!', assigned_to: 'Bersama' }
+];
+
+// Template Rundown Hari H
+const DEFAULT_RUNDOWN_TEMPLATES = [
+  { time_start: '05:30', time_end: '07:30', title: 'Make Up & Persiapan Busana Pengantin', location: 'Kamar Rias / Ruang Ganti', pic: 'MUA & Bridesmaid', notes: 'Sarapan pagi sebelum mulai rias', sort_order: 1 },
+  { time_start: '07:30', time_end: '08:00', title: 'Kedatangan Rombongan Keluarga Calon Pengantin Pria', location: 'Lobi Depan Gedung', pic: 'Among Tamu & Panitia', notes: 'Penyambutan & serah terima seserahan simbolis', sort_order: 2 },
+  { time_start: '08:00', time_end: '08:45', title: 'Prosesi Akad Nikah & Ijab Qabul', location: 'Meja Akad / Pelaminan', pic: 'Penghulu, Saksi, & MC', notes: 'Suasana khidmat, siapkan mic untuk pengantin & wali', sort_order: 3 },
+  { time_start: '08:45', time_end: '09:15', title: 'Penyerahan Mahar, Tukar Cincin & Buku Nikah', location: 'Meja Akad', pic: 'Penghulu & Fotografer', notes: 'Dokumentasi penyerahan mas kawin & tanda tangan buku nikah', sort_order: 4 },
+  { time_start: '09:15', time_end: '10:00', title: 'Prosesi Sungkeman kepada Kedua Orang Tua', location: 'Pelaminan', pic: 'MC & Operator Musik', notes: 'Instrumen haru syahdu, siapkan tisu', sort_order: 5 },
+  { time_start: '10:00', time_end: '10:45', title: 'Foto Bersama Keluarga Inti & Retouch Rias Resepsi', location: 'Pelaminan / Ruang Rias', pic: 'Fotografer & MUA', notes: 'Ganti busana resepsi (jika ada)', sort_order: 6 },
+  { time_start: '10:45', time_end: '11:15', title: 'Opening Resepsi & Kirab Masuk Pengantin', location: 'Pintu Masuk Utama', pic: 'MC, WO, & Pengiring', notes: 'Diiringi lagu romantis & bridesmaid', sort_order: 7 },
+  { time_start: '11:15', time_end: '12:30', title: 'Ramah Tamah, Prasmanan Katering & Foto Tamu Undangan', location: 'Pelaminan & Dining Area', pic: 'WO, MC, & Band/Akustik', notes: 'Sesi foto bergantian per kelompok tamu', sort_order: 8 },
+  { time_start: '12:30', time_end: '13:00', title: 'Closing, Lempar Hand Bouquet & Foto Panitia', location: 'Area Tengah Pelaminan', pic: 'MC & Seluruh Panitia', notes: 'Sesi foto akrab sahabat & seluruh vendor', sort_order: 9 }
+];
+
+// Template Dokumen Legalitas KUA & Catatan Sipil
+const DEFAULT_LEGAL_DOCUMENTS = [
+  // KUA (Muslim)
+  { category: 'kua', name: 'Surat Pengantar Nikah (N1) dari Kelurahan', description: 'Diterbitkan Kelurahan/Desa asal calon pengantin pria & wanita' },
+  { category: 'kua', name: 'Surat Permohonan Kehendak Nikah (N2)', description: 'Formulir pendaftaran nikah dari Kelurahan' },
+  { category: 'kua', name: 'Surat Persetujuan Calon Mempelai (N4)', description: 'Pernyataan kedua mempelai sepakat menikah tanpa paksaan' },
+  { category: 'kua', name: 'Surat Rekomendasi Nikah (dari KUA Asal)', description: 'Wajib jika akad nikah diadakan di luar kecamatan domisili' },
+  { category: 'kua', name: 'Fotokopi KTP Calon Pengantin & Orang Tua', description: 'Masing-masing 2 lembar fotokopi jelas' },
+  { category: 'kua', name: 'Fotokopi Kartu Keluarga (KK) Calon Pengantin', description: 'KK terbaru calon pengantin & orang tua' },
+  { category: 'kua', name: 'Fotokopi Akta Kelahiran & Ijazah Terakhir', description: 'Untuk pencocokan ejaan nama resmi di Buku Nikah' },
+  { category: 'kua', name: 'Pasfoto Berlatar Belakang Biru (2x3 & 4x6)', description: 'Ukuran 2x3 (4 lembar) & 4x6 (2 lembar), pakaian rapi' },
+  { category: 'kua', name: 'Sertifikat Elsimil & Keterangan Kesehatan', description: 'Pemeriksaan kesehatan & imunisasi TT dari Puskesmas' },
+  { category: 'kua', name: 'Bukti Pembayaran PNBP Nikah (Jika di Luar KUA)', description: 'Gratis di KUA saat jam kerja, Rp 600.000 jika di luar KUA/akhir pekan' },
+  { category: 'kua', name: 'Surat Izin Orang Tua / N5 (Jika Usia < 21 Tahun)', description: 'Wajib jika usia calon pengantin di bawah 21 tahun' },
+  { category: 'kua', name: 'Akta Cerai / Akta Kematian Asli (Jika Duda/Janda)', description: 'Wajib bagi calon mempelai yang berstatus duda atau janda' },
+
+  // Catatan Sipil (Non-Muslim)
+  { category: 'sipil', name: 'Surat Keterangan Pemberkatan Perkawinan Agama', description: 'Dari Pemuka Agama / Rumah Ibadah (Gereja/Vihara/Pura)' },
+  { category: 'sipil', name: 'Surat Pengantar Nikah (N1-N4) dari Kelurahan', description: 'Formulir pengantar dari Kelurahan domisili' },
+  { category: 'sipil', name: 'Fotokopi KTP & KK Calon Mempelai', description: 'Rangkap 2 untuk arsip Disdukcapil' },
+  { category: 'sipil', name: 'Fotokopi Akta Kelahiran Calon Mempelai', description: 'Legalisir atau lampirkan dokumen asli saat verifikasi' },
+  { category: 'sipil', name: 'Fotokopi KTP 2 Orang Saksi Perkawinan', description: 'Saksi berusia minimal 21 tahun' },
+  { category: 'sipil', name: 'Pasfoto Berdampingan Berwarna 4x6 (4 Lembar)', description: 'Pria di sebelah kanan, latar belakang sesuai aturan dinas' }
+];
+
+// Template Pembagian Seragam & Panitia
+const DEFAULT_SERAGAM_TEMPLATES = [
+  { recipient_name: 'Ibu Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
+  { recipient_name: 'Ayah Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', cloth_type: 'Bahan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
+  { recipient_name: 'Ibu Kandung Pengantin Pria', role_category: 'Keluarga Pria', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
+  { recipient_name: 'Ayah Kandung Pengantin Pria', role_category: 'Keluarga Pria', cloth_type: 'Bahan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
+  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', cloth_type: 'Bahan Satin Silk / Dress', size_or_meter: '2.5 Meter', status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
+  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', cloth_type: 'Bahan Kemeja Batik / Dasi', size_or_meter: '2 Meter Batik', status: 'Belum Diberikan', notes: 'Batik motif modern' }
+];
+
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -366,6 +462,54 @@ export async function onRequest(context) {
       notes: t.phone || ''
     }));
 
+    // Auto-seed Timeline Items jika masih kosong
+    let timelineRes = await db.prepare('SELECT * FROM timeline_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    if (!timelineRes?.results || timelineRes.results.length === 0) {
+      for (const t of DEFAULT_TIMELINE_TEMPLATES) {
+        await db.prepare(`
+          INSERT INTO timeline_items (id, wedding_id, phase, title, assigned_to, completed)
+          VALUES (?, ?, ?, ?, ?, 0)
+        `).bind('time_' + Math.random().toString(36).substring(2, 9), weddingId, t.phase, t.title, t.assigned_to).run();
+      }
+      timelineRes = await db.prepare('SELECT * FROM timeline_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    }
+
+    // Auto-seed Rundown Items jika masih kosong
+    let rundownRes = await db.prepare('SELECT * FROM rundown_items WHERE wedding_id = ? ORDER BY time_start ASC, sort_order ASC').bind(weddingId).all();
+    if (!rundownRes?.results || rundownRes.results.length === 0) {
+      for (const r of DEFAULT_RUNDOWN_TEMPLATES) {
+        await db.prepare(`
+          INSERT INTO rundown_items (id, wedding_id, time_start, time_end, title, location, pic, notes, sort_order)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind('run_' + Math.random().toString(36).substring(2, 9), weddingId, r.time_start, r.time_end, r.title, r.location, r.pic, r.notes, r.sort_order).run();
+      }
+      rundownRes = await db.prepare('SELECT * FROM rundown_items WHERE wedding_id = ? ORDER BY time_start ASC, sort_order ASC').bind(weddingId).all();
+    }
+
+    // Auto-seed Legal Documents jika masih kosong
+    let legalRes = await db.prepare('SELECT * FROM legal_documents WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    if (!legalRes?.results || legalRes.results.length === 0) {
+      for (const l of DEFAULT_LEGAL_DOCUMENTS) {
+        await db.prepare(`
+          INSERT INTO legal_documents (id, wedding_id, category, name, description, status)
+          VALUES (?, ?, ?, ?, ?, 'Belum')
+        `).bind('leg_' + Math.random().toString(36).substring(2, 9), weddingId, l.category, l.name, l.description).run();
+      }
+      legalRes = await db.prepare('SELECT * FROM legal_documents WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    }
+
+    // Auto-seed Seragam Items jika masih kosong
+    let seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    if (!seragamRes?.results || seragamRes.results.length === 0) {
+      for (const s of DEFAULT_SERAGAM_TEMPLATES) {
+        await db.prepare(`
+          INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, cloth_type, size_or_meter, status, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind('srg_' + Math.random().toString(36).substring(2, 9), weddingId, s.recipient_name, s.role_category, s.cloth_type, s.size_or_meter, s.status, s.notes).run();
+      }
+      seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    }
+
     return json({
       metadata: {
         id: wedding.id,
@@ -386,6 +530,10 @@ export async function onRequest(context) {
       undanganSouvenir,
       tamuUndangan: tamuList,
       afterNikah,
+      timeline: timelineRes.results || [],
+      rundown: rundownRes.results || [],
+      legalDocuments: legalRes.results || [],
+      seragam: seragamRes.results || [],
       activityLogs: (logs.results || []).map(l => ({
         id: l.id,
         user: l.user_name,
@@ -576,7 +724,249 @@ export async function onRequest(context) {
     }
   }
 
-  // 9. SIMULASI / TESTING TOGGLE STATUS VIP
+  // 9. TIMELINE / CHECKLIST CRUD
+  if (path.startsWith('timeline')) {
+    const parts = path.split('/');
+    const itemId = parts[1];
+
+    if (request.method === 'POST' && !itemId) {
+      const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
+      if (!wedding?.is_premium) {
+        const countRes = await db.prepare('SELECT COUNT(*) as count FROM timeline_items WHERE wedding_id = ?').bind(weddingId).first();
+        if ((countRes?.count || 0) >= 35) {
+          return json({
+            error: 'Batas kuota checklist di akun Gratis tercapai. Silakan upgrade ke Siap Nikah VIP untuk checklist tugas tanpa batas!'
+          }, 403);
+        }
+      }
+
+      const item = await request.json();
+      const newId = 'time_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      await db.prepare(`
+        INSERT INTO timeline_items (id, wedding_id, phase, title, assigned_to, completed, due_date, notes)
+        VALUES (?, ?, ?, ?, ?, 0, ?, ?)
+      `).bind(
+        newId,
+        weddingId,
+        item.phase || 'H-1 Bulan',
+        item.title || 'Tugas Baru',
+        item.assignedTo || item.assigned_to || 'Bersama',
+        item.dueDate || item.due_date || '',
+        item.notes || ''
+      ).run();
+      return json({ success: true, id: newId });
+    }
+
+    if (request.method === 'PUT' && itemId) {
+      const item = await request.json();
+      await db.prepare(`
+        UPDATE timeline_items
+        SET phase = COALESCE(?, phase),
+            title = COALESCE(?, title),
+            assigned_to = COALESCE(?, assigned_to),
+            completed = COALESCE(?, completed),
+            due_date = COALESCE(?, due_date),
+            notes = COALESCE(?, notes)
+        WHERE id = ? AND wedding_id = ?
+      `).bind(
+        item.phase ?? null,
+        item.title ?? null,
+        item.assignedTo ?? item.assigned_to ?? null,
+        item.completed !== undefined ? (item.completed ? 1 : 0) : null,
+        item.dueDate ?? item.due_date ?? null,
+        item.notes ?? null,
+        itemId,
+        weddingId
+      ).run();
+      return json({ success: true });
+    }
+
+    if (request.method === 'DELETE' && itemId) {
+      await db.prepare('DELETE FROM timeline_items WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).run();
+      return json({ success: true });
+    }
+  }
+
+  // 10. RUNDOWN HARI H CRUD
+  if (path.startsWith('rundown')) {
+    const parts = path.split('/');
+    const itemId = parts[1];
+
+    if (request.method === 'POST' && !itemId) {
+      const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
+      if (!wedding?.is_premium) {
+        const countRes = await db.prepare('SELECT COUNT(*) as count FROM rundown_items WHERE wedding_id = ?').bind(weddingId).first();
+        if ((countRes?.count || 0) >= 12) {
+          return json({
+            error: 'Batas kuota 12 agenda rundown di akun Gratis tercapai. Silakan upgrade ke Siap Nikah VIP untuk rundown hari H tanpa batas!'
+          }, 403);
+        }
+      }
+
+      const item = await request.json();
+      const newId = 'run_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      await db.prepare(`
+        INSERT INTO rundown_items (id, wedding_id, time_start, time_end, title, location, pic, notes, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        newId,
+        weddingId,
+        item.timeStart || item.time_start || '08:00',
+        item.timeEnd || item.time_end || '',
+        item.title || 'Sesi Acara',
+        item.location || '',
+        item.pic || '',
+        item.notes || '',
+        parseInt(item.sortOrder || item.sort_order) || 0
+      ).run();
+      return json({ success: true, id: newId });
+    }
+
+    if (request.method === 'PUT' && itemId) {
+      const item = await request.json();
+      await db.prepare(`
+        UPDATE rundown_items
+        SET time_start = COALESCE(?, time_start),
+            time_end = COALESCE(?, time_end),
+            title = COALESCE(?, title),
+            location = COALESCE(?, location),
+            pic = COALESCE(?, pic),
+            notes = COALESCE(?, notes),
+            sort_order = COALESCE(?, sort_order)
+        WHERE id = ? AND wedding_id = ?
+      `).bind(
+        item.timeStart ?? item.time_start ?? null,
+        item.timeEnd ?? item.time_end ?? null,
+        item.title ?? null,
+        item.location ?? null,
+        item.pic ?? null,
+        item.notes ?? null,
+        item.sortOrder ?? item.sort_order ?? null,
+        itemId,
+        weddingId
+      ).run();
+      return json({ success: true });
+    }
+
+    if (request.method === 'DELETE' && itemId) {
+      await db.prepare('DELETE FROM rundown_items WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).run();
+      return json({ success: true });
+    }
+  }
+
+  // 11. DOKUMEN LEGALITAS KUA & SIPIL CRUD
+  if (path.startsWith('legal')) {
+    const parts = path.split('/');
+    const itemId = parts[1];
+
+    if (request.method === 'POST' && !itemId) {
+      const item = await request.json();
+      const newId = 'leg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      await db.prepare(`
+        INSERT INTO legal_documents (id, wedding_id, category, name, description, status, notes)
+        VALUES (?, ?, ?, ?, ?, 'Belum', ?)
+      `).bind(
+        newId,
+        weddingId,
+        item.category || 'kua',
+        item.name || 'Dokumen Tambahan',
+        item.description || '',
+        item.notes || ''
+      ).run();
+      return json({ success: true, id: newId });
+    }
+
+    if (request.method === 'PUT' && itemId) {
+      const item = await request.json();
+      await db.prepare(`
+        UPDATE legal_documents
+        SET status = COALESCE(?, status),
+            notes = COALESCE(?, notes),
+            name = COALESCE(?, name),
+            description = COALESCE(?, description)
+        WHERE id = ? AND wedding_id = ?
+      `).bind(
+        item.status ?? null,
+        item.notes ?? null,
+        item.name ?? null,
+        item.description ?? null,
+        itemId,
+        weddingId
+      ).run();
+      return json({ success: true });
+    }
+
+    if (request.method === 'DELETE' && itemId) {
+      await db.prepare('DELETE FROM legal_documents WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).run();
+      return json({ success: true });
+    }
+  }
+
+  // 12. REKAP SERAGAM KELUARGA & PANITIA CRUD
+  if (path.startsWith('seragam')) {
+    const parts = path.split('/');
+    const itemId = parts[1];
+
+    if (request.method === 'POST' && !itemId) {
+      const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
+      if (!wedding?.is_premium) {
+        const countRes = await db.prepare('SELECT COUNT(*) as count FROM seragam_items WHERE wedding_id = ?').bind(weddingId).first();
+        if ((countRes?.count || 0) >= 8) {
+          return json({
+            error: 'Batas kuota 8 data seragam di akun Gratis tercapai. Silakan upgrade ke Siap Nikah VIP untuk rekap seragam tanpa batas!'
+          }, 403);
+        }
+      }
+
+      const item = await request.json();
+      const newId = 'srg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      await db.prepare(`
+        INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, cloth_type, size_or_meter, status, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        newId,
+        weddingId,
+        item.recipientName || item.recipient_name || 'Penerima Seragam',
+        item.roleCategory || item.role_category || 'Keluarga',
+        item.clothType || item.cloth_type || 'Kain',
+        item.sizeOrMeter || item.size_or_meter || '',
+        item.status || 'Belum Diberikan',
+        item.notes || ''
+      ).run();
+      return json({ success: true, id: newId });
+    }
+
+    if (request.method === 'PUT' && itemId) {
+      const item = await request.json();
+      await db.prepare(`
+        UPDATE seragam_items
+        SET recipient_name = COALESCE(?, recipient_name),
+            role_category = COALESCE(?, role_category),
+            cloth_type = COALESCE(?, cloth_type),
+            size_or_meter = COALESCE(?, size_or_meter),
+            status = COALESCE(?, status),
+            notes = COALESCE(?, notes)
+        WHERE id = ? AND wedding_id = ?
+      `).bind(
+        item.recipientName ?? item.recipient_name ?? null,
+        item.roleCategory ?? item.role_category ?? null,
+        item.clothType ?? item.cloth_type ?? null,
+        item.sizeOrMeter ?? item.size_or_meter ?? null,
+        item.status ?? null,
+        item.notes ?? null,
+        itemId,
+        weddingId
+      ).run();
+      return json({ success: true });
+    }
+
+    if (request.method === 'DELETE' && itemId) {
+      await db.prepare('DELETE FROM seragam_items WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).run();
+      return json({ success: true });
+    }
+  }
+
+  // 13. SIMULASI / TESTING TOGGLE STATUS VIP
   if (path === 'test/toggle-vip' && request.method === 'POST') {
     const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
     const newStatus = wedding?.is_premium ? 0 : 1;
@@ -594,6 +984,10 @@ export async function onRequest(context) {
     const tabungan = await db.prepare('SELECT * FROM tabungan WHERE wedding_id = ? ORDER BY date ASC').bind(weddingId).all();
     const budgetItems = await db.prepare('SELECT * FROM budget_items WHERE wedding_id = ? ORDER BY module, category').bind(weddingId).all();
     const tamu = await db.prepare('SELECT * FROM tamu_undangan WHERE wedding_id = ? ORDER BY name ASC').bind(weddingId).all();
+    const timeline = await db.prepare('SELECT * FROM timeline_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    const rundown = await db.prepare('SELECT * FROM rundown_items WHERE wedding_id = ? ORDER BY time_start ASC, sort_order ASC').bind(weddingId).all();
+    const legal = await db.prepare('SELECT * FROM legal_documents WHERE wedding_id = ? ORDER BY category, id ASC').bind(weddingId).all();
+    const seragam = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY role_category, recipient_name ASC').bind(weddingId).all();
 
     let csv = '\uFEFF'; // UTF-8 BOM untuk Microsoft Excel
     csv += `LAPORAN PERENCANAAN PERNIKAHAN: ${wedding.groom_name} & ${wedding.bride_name}\n`;
@@ -616,6 +1010,30 @@ export async function onRequest(context) {
     csv += `Nama Tamu,Kategori/Relasi,Pax,No Telepon,Status Kirim,Konfirmasi Kehadiran\n`;
     for (const tm of (tamu.results || [])) {
       csv += `"${(tm.name || '').replace(/"/g, '""')}","${tm.category || ''}",${tm.pax || 1},"${tm.phone || ''}","${tm.status || ''}","${tm.rsvp_status || ''}"\n`;
+    }
+
+    csv += `\n--- TIMELINE & CHECKLIST PERSIAPAN ---\n`;
+    csv += `Tahapan Waktu,Tugas,Penanggung Jawab,Status,Target Tanggal,Catatan\n`;
+    for (const tl of (timeline.results || [])) {
+      csv += `"${tl.phase || ''}","${(tl.title || '').replace(/"/g, '""')}","${tl.assigned_to || ''}","${tl.completed ? 'Selesai' : 'Belum'}","${tl.due_date || ''}","${(tl.notes || '').replace(/"/g, '""')}"\n`;
+    }
+
+    csv += `\n--- RUNDOWN SUSUNAN ACARA HARI H ---\n`;
+    csv += `Waktu Mulai,Waktu Selesai,Agenda Acara,Lokasi,Penanggung Jawab (PIC),Catatan / Perlengkapan\n`;
+    for (const rd of (rundown.results || [])) {
+      csv += `"${rd.time_start || ''}","${rd.time_end || ''}","${(rd.title || '').replace(/"/g, '""')}","${(rd.location || '').replace(/"/g, '""')}","${(rd.pic || '').replace(/"/g, '""')}","${(rd.notes || '').replace(/"/g, '""')}"\n`;
+    }
+
+    csv += `\n--- CHECKLIST DOKUMEN LEGALITAS KUA & CATATAN SIPIL ---\n`;
+    csv += `Instansi,Nama Berkas/Dokumen,Keterangan,Status Kelengkapan,Catatan\n`;
+    for (const lg of (legal.results || [])) {
+      csv += `"${lg.category === 'kua' ? 'KUA (Muslim)' : 'Catatan Sipil'}","${(lg.name || '').replace(/"/g, '""')}","${(lg.description || '').replace(/"/g, '""')}","${lg.status || 'Belum'}","${(lg.notes || '').replace(/"/g, '""')}"\n`;
+    }
+
+    csv += `\n--- REKAP PEMBAGIAN SERAGAM KELUARGA & PANITIA ---\n`;
+    csv += `Nama Penerima,Kelompok/Peran,Jenis Bahan/Kain,Ukuran/Meter,Status Pembagian,Catatan\n`;
+    for (const sg of (seragam.results || [])) {
+      csv += `"${(sg.recipient_name || '').replace(/"/g, '""')}","${sg.role_category || ''}","${(sg.cloth_type || '').replace(/"/g, '""')}","${sg.size_or_meter || ''}","${sg.status || ''}","${(sg.notes || '').replace(/"/g, '""')}"\n`;
     }
 
     const filename = `WeddingPlan_${(wedding.groom_name || 'Pria')}_${(wedding.bride_name || 'Wanita')}.csv`;

@@ -300,3 +300,111 @@ export async function deleteAfterNikah(id, actor) {
   });
   return res.json();
 }
+
+// TIMELINE / CHECKLIST
+export async function addTimelineItem(item, actor) {
+  const res = await fetch(`${API_BASE}/timeline`, {
+    method: 'POST',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function updateTimelineItem(id, item, actor) {
+  const res = await fetch(`${API_BASE}/timeline/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function deleteTimelineItem(id, actor) {
+  const res = await fetch(`${API_BASE}/timeline/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(actor)
+  });
+  return res.json();
+}
+
+// RUNDOWN HARI H
+export async function addRundownItem(item, actor) {
+  const res = await fetch(`${API_BASE}/rundown`, {
+    method: 'POST',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function updateRundownItem(id, item, actor) {
+  const res = await fetch(`${API_BASE}/rundown/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function deleteRundownItem(id, actor) {
+  const res = await fetch(`${API_BASE}/rundown/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(actor)
+  });
+  return res.json();
+}
+
+// LEGAL DOCUMENTS
+export async function addLegalDocument(item, actor) {
+  const res = await fetch(`${API_BASE}/legal`, {
+    method: 'POST',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function updateLegalDocument(id, item, actor) {
+  const res = await fetch(`${API_BASE}/legal/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function deleteLegalDocument(id, actor) {
+  const res = await fetch(`${API_BASE}/legal/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(actor)
+  });
+  return res.json();
+}
+
+// SERAGAM KELUARGA & PANITIA
+export async function addSeragamItem(item, actor) {
+  const res = await fetch(`${API_BASE}/seragam`, {
+    method: 'POST',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function updateSeragamItem(id, item, actor) {
+  const res = await fetch(`${API_BASE}/seragam/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function deleteSeragamItem(id, actor) {
+  const res = await fetch(`${API_BASE}/seragam/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(actor)
+  });
+  return res.json();
+}

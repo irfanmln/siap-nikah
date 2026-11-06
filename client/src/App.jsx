@@ -12,17 +12,25 @@ import {
   RefreshCw,
   Sparkles,
   Crown,
-  Menu
+  Menu,
+  CalendarCheck,
+  Clock,
+  FileText,
+  Shirt
 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import SettingsModal from './components/SettingsModal';
 import DashboardTab from './components/DashboardTab';
 import TabunganTab from './components/TabunganTab';
+import TimelineTab from './components/TimelineTab';
+import RundownTab from './components/RundownTab';
 import SeserahanTab from './components/SeserahanTab';
 import MaharTab from './components/MaharTab';
 import WeddingTab from './components/WeddingTab';
 import UndanganSouvenirTab from './components/UndanganSouvenirTab';
 import TamuTab from './components/TamuTab';
+import SeragamTab from './components/SeragamTab';
+import LegalDocTab from './components/LegalDocTab';
 import AfterNikahTab from './components/AfterNikahTab';
 import LoginView from './components/LoginView';
 import CreateWeddingModal from './components/CreateWeddingModal';
@@ -41,11 +49,15 @@ import {
 const TABS = [
   { id: 'dashboard', label: 'Ringkasan & Progres', icon: LayoutDashboard },
   { id: 'tabungan', label: 'Tabungan Bersama', icon: Wallet },
+  { id: 'timeline', label: 'Timeline & Checklist', icon: CalendarCheck },
+  { id: 'rundown', label: 'Rundown Acara Hari H', icon: Clock },
   { id: 'wedding', label: 'Vendor & Resepsi', icon: Store },
   { id: 'seserahan', label: 'Seserahan & Hantaran', icon: Gift },
   { id: 'mahar', label: 'Mahar Pernikahan', icon: Coins },
   { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail },
   { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users },
+  { id: 'seragam', label: 'Rekap Seragam & Panitia', icon: Shirt },
+  { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText },
   { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home }
 ];
 
@@ -409,11 +421,15 @@ export default function App() {
         onLogout={handleLogout}
         badgeCounts={{
           tabungan: db?.tabungan?.length,
-          seserahan: `${db?.seserahan?.filter(s => s.purchased)?.length || 0}/${db?.seserahan?.length || 0}`,
+          timeline: `${db?.timeline?.filter(t => t.completed)?.length || 0}/${db?.timeline?.length || 0}`,
+          rundown: db?.rundown?.length,
           wedding: db?.wedding?.length,
+          seserahan: `${db?.seserahan?.filter(s => s.purchased)?.length || 0}/${db?.seserahan?.length || 0}`,
           mahar: db?.mahar?.length,
           undangan: db?.undanganSouvenir?.length,
           tamu: db?.tamuUndangan?.length,
+          seragam: `${db?.seragam?.filter(s => s.status === 'Sudah Jahit')?.length || 0}/${db?.seragam?.length || 0}`,
+          legal: `${db?.legalDocuments?.filter(d => d.status === 'Lengkap')?.length || 0}/${db?.legalDocuments?.length || 0}`,
           afternikah: db?.afterNikah?.length
         }}
         isMobileOpen={isMobileOpen}
@@ -541,6 +557,34 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'timeline' && (
+          <TimelineTab
+            timeline={db?.timeline}
+            metadata={db?.metadata}
+            activeActor={activeActor}
+            onRefresh={loadData}
+            isPremium={isPremium}
+            onRequireVip={(msg) => {
+              setVipFeaturePrompt(msg);
+              setIsVipModalOpen(true);
+            }}
+          />
+        )}
+
+        {activeTab === 'rundown' && (
+          <RundownTab
+            rundown={db?.rundown}
+            metadata={db?.metadata}
+            activeActor={activeActor}
+            onRefresh={loadData}
+            isPremium={isPremium}
+            onRequireVip={(msg) => {
+              setVipFeaturePrompt(msg);
+              setIsVipModalOpen(true);
+            }}
+          />
+        )}
+
         {activeTab === 'seserahan' && (
           <SeserahanTab
             seserahan={db?.seserahan}
@@ -599,6 +643,32 @@ export default function App() {
           <TamuTab
             tamuUndangan={db?.tamuUndangan}
             metadata={db?.metadata}
+            activeActor={activeActor}
+            onRefresh={loadData}
+            isPremium={isPremium}
+            onRequireVip={(msg) => {
+              setVipFeaturePrompt(msg);
+              setIsVipModalOpen(true);
+            }}
+          />
+        )}
+
+        {activeTab === 'seragam' && (
+          <SeragamTab
+            seragam={db?.seragam}
+            activeActor={activeActor}
+            onRefresh={loadData}
+            isPremium={isPremium}
+            onRequireVip={(msg) => {
+              setVipFeaturePrompt(msg);
+              setIsVipModalOpen(true);
+            }}
+          />
+        )}
+
+        {activeTab === 'legal' && (
+          <LegalDocTab
+            legalDocuments={db?.legalDocuments}
             activeActor={activeActor}
             onRefresh={loadData}
             isPremium={isPremium}
