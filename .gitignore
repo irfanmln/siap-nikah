@@ -1,0 +1,7 @@
+node_modules/
+client/node_modules/
+.wrangler/
+dist/
+public/assets/
+.env*
+.DS_Store

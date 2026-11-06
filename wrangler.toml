@@ -1,0 +1,11 @@
+name = "wedding-saas"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "public"
+
+[vars]
+GOOGLE_CLIENT_ID = "477773891287-2o9sf30sf4kuvsboud6r9oouotvumcak.apps.googleusercontent.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wedding-db"
+database_id = "47f3439b-48c5-4841-9f4b-d215bc487d41"

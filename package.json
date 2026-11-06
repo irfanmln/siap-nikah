@@ -1,0 +1,13 @@
+{
+  "name": "wedding-saas",
+  "version": "1.0.0",
+  "description": "Siap Nikah — Platform Perencanaan Pernikahan & Undangan Digital",
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "pages:dev": "npm run build && npx wrangler pages dev public --d1=DB"
+  },
+  "devDependencies": {
+    "wrangler": "^4.158.0"
+  }
+}
