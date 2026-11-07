@@ -204,8 +204,15 @@ export default function App() {
       if (!silent) setLoading(true);
       const data = await fetchDb();
       setDb(data);
-      if (data?.metadata?.groom && !localStorage.getItem('wedding_active_actor')) {
-        setActiveActorState(data.metadata.groom);
+      if (data?.metadata) {
+        const groom = data.metadata.groom || 'Pria';
+        const bride = data.metadata.bride || 'Wanita';
+        const savedActor = localStorage.getItem('wedding_active_actor');
+        if (savedActor !== groom && savedActor !== bride) {
+          setActiveActor(groom);
+        } else if (activeActor !== savedActor) {
+          setActiveActorState(savedActor);
+        }
       }
       setError(null);
     } catch (err) {
@@ -290,6 +297,7 @@ export default function App() {
       setAuthToken(result.token);
       setUser(result.user);
       setWeddings(result.weddings || []);
+      localStorage.removeItem('wedding_active_actor');
       if (result.weddings?.length > 0) {
         const firstId = result.weddings[0].id;
         setActiveWeddingId(firstId);
@@ -310,6 +318,8 @@ export default function App() {
     setUser(null);
     setDb(null);
     setWeddings([]);
+    localStorage.removeItem('wedding_active_actor');
+    localStorage.removeItem('nikahplan_wedding_id');
   };
 
   // Wedding Created Handler
@@ -317,6 +327,10 @@ export default function App() {
     setWeddings([newWedding]);
     setActiveWeddingId(newWedding.id);
     setActiveWeddingIdState(newWedding.id);
+    localStorage.removeItem('wedding_active_actor');
+    if (newWedding.groom_name) {
+      setActiveActor(newWedding.groom_name);
+    }
   };
 
   // If checking authentication
@@ -403,6 +417,10 @@ export default function App() {
     );
   }
 
+  const groomName = db?.metadata?.groom || 'Pria';
+  const brideName = db?.metadata?.bride || 'Wanita';
+  const effectiveActor = (activeActor === brideName) ? brideName : groomName;
+
   return (
     <div className="min-h-screen flex bg-[#faf8f5] w-full max-w-[100vw] overflow-x-hidden">
       
@@ -411,7 +429,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         metadata={db?.metadata}
-        activeActor={activeActor}
+        activeActor={effectiveActor}
         setActiveActor={setActiveActor}
         isPremium={isPremium}
         onOpenUpgradeVip={() => {
@@ -467,15 +485,13 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                const groomName = db?.metadata?.groom || 'Pria';
-                const brideName = db?.metadata?.bride || 'Wanita';
-                setActiveActor(activeActor === groomName ? brideName : groomName);
+                setActiveActor(effectiveActor === groomName ? brideName : groomName);
               }}
               className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition border border-stone-200/60"
               title="Ganti Pengisi Data"
             >
-              <span>{activeActor === (db?.metadata?.groom || 'Pria') ? '🤵' : '👰'}</span>
-              <span className="truncate max-w-[75px]">{activeActor}</span>
+              <span>{effectiveActor === groomName ? '🤵' : '👰'}</span>
+              <span className="truncate max-w-[75px]">{effectiveActor}</span>
             </button>
 
             {!isPremium && (
@@ -499,7 +515,7 @@ export default function App() {
               {TABS.find(t => t.id === activeTab)?.label || 'Dashboard'}
             </h1>
             <span className="text-xs text-stone-400 font-normal">
-              • {db?.metadata?.groom || 'Pria'} & {db?.metadata?.bride || 'Wanita'}
+              • {groomName} & {brideName}
             </span>
           </div>
 
@@ -508,15 +524,13 @@ export default function App() {
               <span className="text-stone-400 mr-1.5">Pengisi Data:</span>
               <button
                 onClick={() => {
-                  const groomName = db?.metadata?.groom || 'Pria';
-                  const brideName = db?.metadata?.bride || 'Wanita';
-                  setActiveActor(activeActor === groomName ? brideName : groomName);
+                  setActiveActor(effectiveActor === groomName ? brideName : groomName);
                 }}
                 className="font-bold text-stone-800 hover:text-rose-600 flex items-center gap-1 cursor-pointer transition"
                 title="Klik untuk beralih antara Pria & Wanita"
               >
-                <span>{activeActor === (db?.metadata?.groom || 'Pria') ? '🤵' : '👰'}</span>
-                <span>{activeActor}</span>
+                <span>{effectiveActor === groomName ? '🤵' : '👰'}</span>
+                <span>{effectiveActor}</span>
                 <span className="text-[10px] text-stone-400 ml-0.5 font-normal">(Ganti)</span>
               </button>
             </div>
@@ -556,7 +570,7 @@ export default function App() {
           <TabunganTab
             tabungan={db?.tabungan}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -570,7 +584,7 @@ export default function App() {
           <TimelineTab
             timeline={db?.timeline}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -584,7 +598,7 @@ export default function App() {
           <RundownTab
             rundown={db?.rundown}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -598,7 +612,7 @@ export default function App() {
           <SeserahanTab
             seserahan={db?.seserahan}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -612,7 +626,7 @@ export default function App() {
           <MaharTab
             mahar={db?.mahar}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -625,7 +639,7 @@ export default function App() {
         {activeTab === 'wedding' && (
           <WeddingTab
             wedding={db?.wedding}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -638,7 +652,7 @@ export default function App() {
         {activeTab === 'undangan' && (
           <UndanganSouvenirTab
             undanganSouvenir={db?.undanganSouvenir}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -652,7 +666,7 @@ export default function App() {
           <TamuTab
             tamuUndangan={db?.tamuUndangan}
             metadata={db?.metadata}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -665,7 +679,7 @@ export default function App() {
         {activeTab === 'seragam' && (
           <SeragamTab
             seragam={db?.seragam}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -678,7 +692,7 @@ export default function App() {
         {activeTab === 'legal' && (
           <LegalDocTab
             legalDocuments={db?.legalDocuments}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -691,7 +705,7 @@ export default function App() {
         {activeTab === 'afternikah' && (
           <AfterNikahTab
             afterNikah={db?.afterNikah}
-            activeActor={activeActor}
+            activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}
             onRequireVip={(msg) => {
@@ -724,7 +738,7 @@ export default function App() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         onUpdated={loadData}
-        activeActor={activeActor}
+        activeActor={effectiveActor}
       />
 
       {/* Invite Partner Modal */}

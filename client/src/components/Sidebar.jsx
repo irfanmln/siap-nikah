@@ -123,8 +123,10 @@ export default function Sidebar({
     }));
   };
 
+  const displayActor = (activeActor === brideName) ? brideName : groomName;
+
   const toggleActor = () => {
-    if (activeActor === groomName) {
+    if (displayActor === groomName) {
       setActiveActor(brideName);
     } else {
       setActiveActor(groomName);
@@ -223,8 +225,8 @@ export default function Sidebar({
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white hover:bg-stone-100 border border-stone-200 text-xs font-bold text-stone-800 transition cursor-pointer shadow-2xs"
               title="Ketuk untuk beralih antara Pria & Wanita"
             >
-              <span>{activeActor === groomName ? '🤵' : '👰'}</span>
-              <span className="truncate max-w-[80px]">{activeActor}</span>
+              <span>{displayActor === groomName ? '🤵' : '👰'}</span>
+              <span className="truncate max-w-[80px]">{displayActor}</span>
               <ArrowLeftRight className="w-2.5 h-2.5 text-stone-400 ml-0.5" />
             </button>
           </div>
