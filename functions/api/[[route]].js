@@ -128,12 +128,12 @@ const DEFAULT_LEGAL_DOCUMENTS = [
 
 // Template Pembagian Seragam & Panitia
 const DEFAULT_SERAGAM_TEMPLATES = [
-  { recipient_name: 'Ibu Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
-  { recipient_name: 'Ayah Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', cloth_type: 'Bahan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
-  { recipient_name: 'Ibu Kandung Pengantin Pria', role_category: 'Keluarga Pria', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
-  { recipient_name: 'Ayah Kandung Pengantin Pria', role_category: 'Keluarga Pria', cloth_type: 'Bahan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
-  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', cloth_type: 'Bahan Satin Silk / Dress', size_or_meter: '2.5 Meter', status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
-  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', cloth_type: 'Bahan Kemeja Batik / Dasi', size_or_meter: '2 Meter Batik', status: 'Belum Diberikan', notes: 'Batik motif modern' }
+  { recipient_name: 'Ibu Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', cloth_cost: 350000, tailor_cost: 250000, total_cost: 600000, status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
+  { recipient_name: 'Ayah Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'One Set', cloth_type: 'Setelan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', cloth_cost: 500000, tailor_cost: 0, total_cost: 500000, status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
+  { recipient_name: 'Ibu Kandung Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', cloth_cost: 350000, tailor_cost: 250000, total_cost: 600000, status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
+  { recipient_name: 'Ayah Kandung Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'One Set', cloth_type: 'Setelan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', cloth_cost: 500000, tailor_cost: 0, total_cost: 500000, status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
+  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', item_type: 'Dress / Gamis', cloth_type: 'Bahan Satin Silk / Dress Jadi', size_or_meter: '2.5 Meter', cloth_cost: 250000, tailor_cost: 0, total_cost: 250000, status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
+  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', item_type: 'Atasan', cloth_type: 'Kemeja Batik Siap Pakai', size_or_meter: 'Ukuran L', cloth_cost: 150000, tailor_cost: 0, total_cost: 150000, status: 'Belum Diberikan', notes: 'Batik motif modern' }
 ];
 
 export async function onRequest(context) {
@@ -503,9 +503,22 @@ export async function onRequest(context) {
     if (!seragamRes?.results || seragamRes.results.length === 0) {
       for (const s of DEFAULT_SERAGAM_TEMPLATES) {
         await db.prepare(`
-          INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, cloth_type, size_or_meter, status, notes)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `).bind('srg_' + Math.random().toString(36).substring(2, 9), weddingId, s.recipient_name, s.role_category, s.cloth_type, s.size_or_meter, s.status, s.notes).run();
+          INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, item_type, cloth_type, size_or_meter, cloth_cost, tailor_cost, total_cost, status, notes)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          'srg_' + Math.random().toString(36).substring(2, 9),
+          weddingId,
+          s.recipient_name,
+          s.role_category,
+          s.item_type || 'Bahan Kain (Meteran)',
+          s.cloth_type,
+          s.size_or_meter,
+          s.cloth_cost || 0,
+          s.tailor_cost || 0,
+          s.total_cost || 0,
+          s.status,
+          s.notes
+        ).run();
       }
       seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
     }
@@ -920,16 +933,24 @@ export async function onRequest(context) {
 
       const item = await request.json();
       const newId = 'srg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+      const clothCost = parseInt(item.clothCost ?? item.cloth_cost) || 0;
+      const tailorCost = parseInt(item.tailorCost ?? item.tailor_cost) || 0;
+      const totalCost = clothCost + tailorCost;
+
       await db.prepare(`
-        INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, cloth_type, size_or_meter, status, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO seragam_items (id, wedding_id, recipient_name, role_category, item_type, cloth_type, size_or_meter, cloth_cost, tailor_cost, total_cost, status, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         newId,
         weddingId,
         item.recipientName || item.recipient_name || 'Penerima Seragam',
-        item.roleCategory || item.role_category || 'Keluarga',
+        item.roleCategory || item.role_category || 'Keluarga Wanita',
+        item.itemType || item.item_type || 'Bahan Kain (Meteran)',
         item.clothType || item.cloth_type || 'Kain',
         item.sizeOrMeter || item.size_or_meter || '',
+        clothCost,
+        tailorCost,
+        totalCost,
         item.status || 'Belum Diberikan',
         item.notes || ''
       ).run();
@@ -938,20 +959,39 @@ export async function onRequest(context) {
 
     if (request.method === 'PUT' && itemId) {
       const item = await request.json();
+      const clothCost = item.clothCost !== undefined ? parseInt(item.clothCost) : item.cloth_cost !== undefined ? parseInt(item.cloth_cost) : null;
+      const tailorCost = item.tailorCost !== undefined ? parseInt(item.tailorCost) : item.tailor_cost !== undefined ? parseInt(item.tailor_cost) : null;
+      
+      let totalCost = null;
+      if (clothCost !== null || tailorCost !== null) {
+        const currentItem = await db.prepare('SELECT cloth_cost, tailor_cost FROM seragam_items WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).first();
+        const finalCloth = clothCost !== null ? clothCost : (currentItem?.cloth_cost || 0);
+        const finalTailor = tailorCost !== null ? tailorCost : (currentItem?.tailor_cost || 0);
+        totalCost = finalCloth + finalTailor;
+      }
+
       await db.prepare(`
         UPDATE seragam_items
         SET recipient_name = COALESCE(?, recipient_name),
             role_category = COALESCE(?, role_category),
+            item_type = COALESCE(?, item_type),
             cloth_type = COALESCE(?, cloth_type),
             size_or_meter = COALESCE(?, size_or_meter),
+            cloth_cost = COALESCE(?, cloth_cost),
+            tailor_cost = COALESCE(?, tailor_cost),
+            total_cost = COALESCE(?, total_cost),
             status = COALESCE(?, status),
             notes = COALESCE(?, notes)
         WHERE id = ? AND wedding_id = ?
       `).bind(
         item.recipientName ?? item.recipient_name ?? null,
         item.roleCategory ?? item.role_category ?? null,
+        item.itemType ?? item.item_type ?? null,
         item.clothType ?? item.cloth_type ?? null,
         item.sizeOrMeter ?? item.size_or_meter ?? null,
+        clothCost,
+        tailorCost,
+        totalCost,
         item.status ?? null,
         item.notes ?? null,
         itemId,
@@ -1030,10 +1070,10 @@ export async function onRequest(context) {
       csv += `"${lg.category === 'kua' ? 'KUA (Muslim)' : 'Catatan Sipil'}","${(lg.name || '').replace(/"/g, '""')}","${(lg.description || '').replace(/"/g, '""')}","${lg.status || 'Belum'}","${(lg.notes || '').replace(/"/g, '""')}"\n`;
     }
 
-    csv += `\n--- REKAP PEMBAGIAN SERAGAM KELUARGA & PANITIA ---\n`;
-    csv += `Nama Penerima,Kelompok/Peran,Jenis Bahan/Kain,Ukuran/Meter,Status Pembagian,Catatan\n`;
+    csv += `\n--- REKAP PEMBAGIAN SERAGAM KELUARGA & BRIDESMAID ---\n`;
+    csv += `Nama Penerima,Kelompok,Bentuk Seragam,Rincian Bahan/Busana,Ukuran/Meter,Biaya Bahan (Rp),Ongkos Jahit (Rp),Total Biaya (Rp),Status Pembagian,Catatan\n`;
     for (const sg of (seragam.results || [])) {
-      csv += `"${(sg.recipient_name || '').replace(/"/g, '""')}","${sg.role_category || ''}","${(sg.cloth_type || '').replace(/"/g, '""')}","${sg.size_or_meter || ''}","${sg.status || ''}","${(sg.notes || '').replace(/"/g, '""')}"\n`;
+      csv += `"${(sg.recipient_name || '').replace(/"/g, '""')}","${sg.role_category || ''}","${sg.item_type || ''}","${(sg.cloth_type || '').replace(/"/g, '""')}","${sg.size_or_meter || ''}",${sg.cloth_cost || 0},${sg.tailor_cost || 0},${sg.total_cost || 0},"${sg.status || ''}","${(sg.notes || '').replace(/"/g, '""')}"\n`;
     }
 
     const filename = `WeddingPlan_${(wedding.groom_name || 'Pria')}_${(wedding.bride_name || 'Wanita')}.csv`;

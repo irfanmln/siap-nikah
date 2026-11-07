@@ -152,9 +152,13 @@ CREATE TABLE IF NOT EXISTS seragam_items (
     id TEXT PRIMARY KEY,
     wedding_id TEXT NOT NULL,
     recipient_name TEXT NOT NULL,
-    role_category TEXT NOT NULL, -- 'Keluarga Pria', 'Keluarga Wanita', 'Bridesmaid', 'Groomsmen', 'Panitia / Among Tamu'
+    role_category TEXT NOT NULL, -- 'Keluarga Wanita', 'Keluarga Pria', 'Bridesmaid', 'Groomsmen'
+    item_type TEXT DEFAULT 'Bahan Kain', -- 'Bahan Kain (Meteran)', 'Atasan', 'Bawahan', 'One Set', 'Dress / Gamis'
     cloth_type TEXT NOT NULL,
     size_or_meter TEXT,
+    cloth_cost INTEGER DEFAULT 0,
+    tailor_cost INTEGER DEFAULT 0,
+    total_cost INTEGER DEFAULT 0,
     status TEXT DEFAULT 'Belum Diberikan', -- 'Belum Diberikan', 'Sudah Diberikan', 'Sudah Jahit'
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

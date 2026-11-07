@@ -10,8 +10,11 @@ import {
   Users,
   Sparkles,
   Filter,
-  Check
+  Check,
+  Wallet,
+  DollarSign
 } from 'lucide-react';
+import { formatRupiah } from '../utils/formatters';
 import { addSeragamItem, updateSeragamItem, deleteSeragamItem } from '../utils/api';
 
 const ROLE_OPTIONS = [
@@ -19,8 +22,15 @@ const ROLE_OPTIONS = [
   'Keluarga Wanita',
   'Keluarga Pria',
   'Bridesmaid',
-  'Groomsmen',
-  'Panitia / Among Tamu'
+  'Groomsmen'
+];
+
+const ITEM_TYPES = [
+  'Bahan Kain (Meteran)',
+  'Atasan (Kebaya / Kemeja)',
+  'Bawahan (Kain / Rok / Celana)',
+  'One Set (Atasan + Bawahan)',
+  'Dress / Gamis'
 ];
 
 export default function SeragamTab({
@@ -38,8 +48,11 @@ export default function SeragamTab({
   const [formData, setFormData] = useState({
     recipientName: '',
     roleCategory: 'Keluarga Wanita',
+    itemType: 'Bahan Kain (Meteran)',
     clothType: '',
     sizeOrMeter: '',
+    clothCost: '',
+    tailorCost: '',
     status: 'Belum Diberikan',
     notes: ''
   });
@@ -47,6 +60,12 @@ export default function SeragamTab({
   const totalRecipients = seragam.length;
   const distributedCount = seragam.filter(s => s.status === 'Sudah Diberikan' || s.status === 'Sudah Jahit').length;
   const finishedCount = seragam.filter(s => s.status === 'Sudah Jahit').length;
+  
+  // Total Biaya Pengeluaran Seragam
+  const totalSeragamCost = seragam.reduce((sum, s) => {
+    const cost = Number(s.total_cost) || ((Number(s.cloth_cost) || 0) + (Number(s.tailor_cost) || 0));
+    return sum + cost;
+  }, 0);
 
   const filteredSeragam = seragam.filter(item => {
     if (selectedRole === 'Semua') return true;
@@ -56,7 +75,7 @@ export default function SeragamTab({
   const handleOpenAdd = () => {
     if (!isPremium && seragam.length >= 8) {
       if (onRequireVip) {
-        onRequireVip('Batas kuota 8 data seragam di akun Gratis tercapai. Upgrade ke Siap Nikah VIP untuk rekap seragam keluarga & panitia tanpa batas!');
+        onRequireVip('Batas kuota 8 data seragam di akun Gratis tercapai. Upgrade ke Siap Nikah VIP untuk rekap seragam keluarga & bridesmaid tanpa batas!');
       } else {
         alert('Batas kuota seragam tercapai.');
       }
@@ -67,8 +86,11 @@ export default function SeragamTab({
     setFormData({
       recipientName: '',
       roleCategory: selectedRole === 'Semua' ? 'Keluarga Wanita' : selectedRole,
+      itemType: 'Bahan Kain (Meteran)',
       clothType: '',
       sizeOrMeter: '2.5 Meter',
+      clothCost: '',
+      tailorCost: '',
       status: 'Belum Diberikan',
       notes: ''
     });
@@ -80,8 +102,11 @@ export default function SeragamTab({
     setFormData({
       recipientName: item.recipient_name || '',
       roleCategory: item.role_category || 'Keluarga Wanita',
+      itemType: item.item_type || 'Bahan Kain (Meteran)',
       clothType: item.cloth_type || '',
       sizeOrMeter: item.size_or_meter || '',
+      clothCost: item.cloth_cost || '',
+      tailorCost: item.tailor_cost || '',
       status: item.status || 'Belum Diberikan',
       notes: item.notes || ''
     });
@@ -94,10 +119,16 @@ export default function SeragamTab({
 
     try {
       setSubmitting(true);
+      const payload = {
+        ...formData,
+        clothCost: parseInt(formData.clothCost) || 0,
+        tailorCost: parseInt(formData.tailorCost) || 0
+      };
+
       if (editingItem) {
-        await updateSeragamItem(editingItem.id, formData, activeActor);
+        await updateSeragamItem(editingItem.id, payload, activeActor);
       } else {
-        const res = await addSeragamItem(formData, activeActor);
+        const res = await addSeragamItem(payload, activeActor);
         if (res.error) throw new Error(res.error);
       }
       setIsModalOpen(false);
@@ -131,7 +162,7 @@ export default function SeragamTab({
   return (
     <div className="space-y-6">
       
-      {/* 1. Header & Quick KPI Overview */}
+      {/* 1. Header & Quick Financial KPI Overview */}
       <div className="bg-white rounded-3xl p-5 sm:p-7 border border-stone-200/80 shadow-xs relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
           <div>
@@ -140,11 +171,11 @@ export default function SeragamTab({
                 <Scissors className="w-5 h-5" />
               </span>
               <h2 className="font-serif font-bold text-xl sm:text-2xl text-stone-900">
-                Rekap Seragam Keluarga & Panitia
+                Rekap Seragam Keluarga & Bridesmaid
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-stone-500 mt-1">
-              Catatan pembagian kain kebaya, batik, beskap, dan seragam untuk keluarga inti, bridesmaid, serta panitia.
+              Catatan bahan kain mentah, baju jadi (one set/dress), ukuran, estimasi ongkos jahit, serta status pembagian.
             </p>
           </div>
 
@@ -159,19 +190,26 @@ export default function SeragamTab({
           </div>
         </div>
 
-        {/* KPI Mini Cards */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* KPI Summary Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/60">
             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Total Penerima</span>
-            <p className="text-lg sm:text-xl font-bold text-stone-900 mt-0.5">{totalRecipients}</p>
+            <p className="text-lg sm:text-xl font-bold text-stone-900 mt-0.5">{totalRecipients} Orang</p>
           </div>
+
+          <div className="p-3.5 rounded-2xl bg-rose-50/70 border border-rose-200/60">
+            <span className="text-[10px] font-bold text-rose-700 uppercase tracking-wider">Total Biaya Seragam</span>
+            <p className="text-lg sm:text-xl font-bold text-rose-900 mt-0.5 font-mono">{formatRupiah(totalSeragamCost)}</p>
+          </div>
+
           <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/60">
             <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Kain Terbagi</span>
-            <p className="text-lg sm:text-xl font-bold text-amber-900 mt-0.5">{distributedCount}</p>
+            <p className="text-lg sm:text-xl font-bold text-amber-900 mt-0.5">{distributedCount} / {totalRecipients}</p>
           </div>
+
           <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/60">
-            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Sudah Jahit/Jadi</span>
-            <p className="text-lg sm:text-xl font-bold text-emerald-900 mt-0.5">{finishedCount}</p>
+            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Sudah Jahit / Jadi</span>
+            <p className="text-lg sm:text-xl font-bold text-emerald-900 mt-0.5">{finishedCount} Orang</p>
           </div>
         </div>
 
@@ -179,7 +217,7 @@ export default function SeragamTab({
         {!isPremium && (
           <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
             <span>Batas Kuota Akun Gratis: {seragam.length}/8 Penerima</span>
-            <span className="text-[11px] text-amber-600 font-semibold">Upgrade VIP untuk rekap tanpa batas</span>
+            <span className="text-[11px] text-amber-600 font-semibold">Upgrade VIP untuk rekap seragam tanpa batas</span>
           </div>
         )}
       </div>
@@ -222,8 +260,7 @@ export default function SeragamTab({
           </div>
         ) : (
           filteredSeragam.map(item => {
-            const isDistributed = item.status === 'Sudah Diberikan' || item.status === 'Sudah Jahit';
-            const isFinished = item.status === 'Sudah Jahit';
+            const itemTotalCost = Number(item.total_cost) || ((Number(item.cloth_cost) || 0) + (Number(item.tailor_cost) || 0));
 
             return (
               <div
@@ -236,9 +273,14 @@ export default function SeragamTab({
                       <h3 className="font-serif font-bold text-sm sm:text-base text-stone-900">
                         {item.recipient_name}
                       </h3>
-                      <span className="inline-block mt-0.5 text-[10px] px-2 py-0.5 rounded-md font-bold bg-purple-50 text-purple-700 border border-purple-200/50">
-                        {item.role_category || 'Keluarga'}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md font-bold bg-purple-50 text-purple-700 border border-purple-200/50">
+                          {item.role_category || 'Keluarga'}
+                        </span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-stone-100 text-stone-600 border border-stone-200/50">
+                          {item.item_type || 'Bahan Kain'}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-1 shrink-0">
@@ -260,16 +302,32 @@ export default function SeragamTab({
                   </div>
 
                   {/* Cloth type & Size info */}
-                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60 mb-2.5 text-xs space-y-1">
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/60 mb-2.5 text-xs space-y-1.5">
                     <p className="text-stone-800 font-semibold flex items-center gap-1.5">
-                      <Shirt className="w-3.5 h-3.5 text-stone-400" />
+                      <Shirt className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                       <span>{item.cloth_type}</span>
                     </p>
                     {item.size_or_meter && (
                       <p className="text-stone-500 text-[11px] pl-5">
-                        Ukuran/Bahan: <strong className="text-stone-700">{item.size_or_meter}</strong>
+                        Ukuran / Meteran: <strong className="text-stone-700">{item.size_or_meter}</strong>
                       </p>
                     )}
+
+                    {/* Cost Breakdown */}
+                    {(item.cloth_cost > 0 || item.tailor_cost > 0 || itemTotalCost > 0) && (
+                      <div className="pl-5 pt-1 border-t border-stone-200/50 flex flex-wrap items-center justify-between gap-1 text-[11px]">
+                        <span className="text-stone-500">
+                          Bahan: <strong className="text-stone-800 font-mono">{formatRupiah(item.cloth_cost || 0)}</strong>
+                          {item.tailor_cost > 0 && (
+                            <span> + Jahit: <strong className="text-stone-800 font-mono">{formatRupiah(item.tailor_cost)}</strong></span>
+                          )}
+                        </span>
+                        <span className="font-bold text-rose-600 font-mono">
+                          Total: {formatRupiah(itemTotalCost)}
+                        </span>
+                      </div>
+                    )}
+
                     {item.notes && (
                       <p className="text-stone-400 italic text-[11px] pl-5">
                         💬 {item.notes}
@@ -314,15 +372,15 @@ export default function SeragamTab({
       {/* 4. Modal Tambah / Edit Seragam */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <h3 className="font-serif font-bold text-lg text-stone-900 mb-1">
               {editingItem ? 'Ubah Data Seragam' : 'Tambah Penerima Seragam'}
             </h3>
             <p className="text-xs text-stone-500 mb-4">
-              Catat nama penerima, jenis kain/busana, dan ukuran meteran bahan.
+              Catat nama penerima, bentuk seragam (bahan kain / baju jadi), ukuran, dan biayanya.
             </p>
 
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-bold text-stone-700 mb-1">Nama Penerima</label>
                 <input
@@ -337,7 +395,7 @@ export default function SeragamTab({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Kelompok Peran</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Kelompok</label>
                   <select
                     value={formData.roleCategory}
                     onChange={e => setFormData({ ...formData, roleCategory: e.target.value })}
@@ -348,28 +406,73 @@ export default function SeragamTab({
                     ))}
                   </select>
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Ukuran / Meteran</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: 2.5 Meter / Ukuran L"
-                    value={formData.sizeOrMeter}
-                    onChange={e => setFormData({ ...formData, sizeOrMeter: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-hidden focus:border-rose-400"
-                  />
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Bentuk Seragam</label>
+                  <select
+                    value={formData.itemType}
+                    onChange={e => setFormData({ ...formData, itemType: e.target.value })}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-hidden focus:border-rose-400 bg-white"
+                  >
+                    {ITEM_TYPES.map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Jenis Bahan / Seragam</label>
+                <label className="block text-xs font-bold text-stone-700 mb-1">Rincian Bahan / Model Baju</label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Kain Brokat Sage Green + Furing Satin"
+                  placeholder="Contoh: Kain Brokat Tile Sage Green / Dress Satin Lilit"
                   value={formData.clothType}
                   onChange={e => setFormData({ ...formData, clothType: e.target.value })}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-hidden focus:border-rose-400"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-stone-700 mb-1">Ukuran / Meteran Bahan</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: 3 Meter Brokat + 2m Furing / Ukuran M"
+                  value={formData.sizeOrMeter}
+                  onChange={e => setFormData({ ...formData, sizeOrMeter: e.target.value })}
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-hidden focus:border-rose-400"
+                />
+              </div>
+
+              {/* Input Biaya / Harga */}
+              <div className="grid grid-cols-2 gap-3 p-3 rounded-2xl bg-rose-50/50 border border-rose-100">
+                <div>
+                  <label className="block text-[11px] font-bold text-rose-900 mb-1">Harga Bahan / Baju (Rp)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Contoh: 250000"
+                    value={formData.clothCost}
+                    onChange={e => setFormData({ ...formData, clothCost: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-rose-200 focus:outline-hidden focus:border-rose-400 bg-white font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-rose-900 mb-1">Ongkos Jahit (Rp, opsional)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Contoh: 150000"
+                    value={formData.tailorCost}
+                    onChange={e => setFormData({ ...formData, tailorCost: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-rose-200 focus:outline-hidden focus:border-rose-400 bg-white font-mono"
+                  />
+                </div>
+
+                <div className="col-span-2 text-right text-[11px] font-bold text-rose-700">
+                  Total: {formatRupiah((parseInt(formData.clothCost) || 0) + (parseInt(formData.tailorCost) || 0))}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -386,10 +489,10 @@ export default function SeragamTab({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Catatan Tambahan</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Catatan</label>
                   <input
                     type="text"
-                    placeholder="Contoh: Penjahit Bu Yati"
+                    placeholder="Contoh: Toko Mayestik / Penjahit Bu Yati"
                     value={formData.notes}
                     onChange={e => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 focus:outline-hidden focus:border-rose-400"
@@ -397,7 +500,7 @@ export default function SeragamTab({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
