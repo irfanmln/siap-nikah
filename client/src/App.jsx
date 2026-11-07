@@ -119,6 +119,12 @@ export default function App() {
     }
   };
 
+  const handleSwitchWedding = (newId) => {
+    setActiveWeddingId(newId);
+    setActiveWeddingIdState(newId);
+    localStorage.removeItem('wedding_active_actor');
+  };
+
   const handleToggleVipTest = async () => {
     try {
       const token = localStorage.getItem('nikahplan_token');
@@ -434,6 +440,9 @@ export default function App() {
         }}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
+        weddings={weddings}
+        activeWeddingId={activeWeddingId}
+        onSwitchWedding={handleSwitchWedding}
       />
 
       {/* Right Content Area */}

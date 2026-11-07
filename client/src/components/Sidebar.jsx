@@ -83,7 +83,10 @@ export default function Sidebar({
   onLogout,
   badgeCounts = {},
   isMobileOpen = false,
-  setIsMobileOpen
+  setIsMobileOpen,
+  weddings = [],
+  activeWeddingId,
+  onSwitchWedding
 }) {
   const groomName = metadata?.groom || 'Pria';
   const brideName = metadata?.bride || 'Wanita';
@@ -171,6 +174,27 @@ export default function Sidebar({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Wedding / Workspace Switcher (Jika user memiliki lebih dari 1 rencana pernikahan) */}
+        {weddings && weddings.length > 1 && (
+          <div className="p-2.5 rounded-2xl bg-stone-100/90 border border-stone-200/80 mb-3 shadow-2xs">
+            <div className="flex items-center justify-between text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1 px-0.5">
+              <span>Ganti Rencana:</span>
+              <span className="text-rose-600 font-semibold">{weddings.length} Workspace</span>
+            </div>
+            <select
+              value={activeWeddingId}
+              onChange={(e) => onSwitchWedding && onSwitchWedding(e.target.value)}
+              className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-stone-300/80 text-xs font-bold text-stone-900 focus:outline-hidden focus:border-rose-400 cursor-pointer shadow-2xs"
+            >
+              {weddings.map((w) => (
+                <option key={w.id} value={w.id}>
+                  💍 {w.groom_name} & {w.bride_name} {w.owner_id === user?.id ? '(Milik Anda)' : '(Dari Pasangan)'}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Couple Profile Card */}
         <div className="p-3.5 rounded-2xl bg-gradient-to-br from-rose-50 via-stone-50 to-amber-50/60 border border-rose-100 shadow-2xs mb-4">
