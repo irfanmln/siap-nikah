@@ -121,10 +121,10 @@ const DEFAULT_LEGAL_DOCUMENTS = [
 
 // Template Pembagian Seragam & Panitia
 const DEFAULT_SERAGAM_TEMPLATES = [
-  { recipient_name: 'Seragam Keluarga Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya & Batik Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar wanita (om, tante, sepupu)' },
-  { recipient_name: 'Seragam Keluarga Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Beskap & Batik Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar pria (om, tante, sepupu)' },
-  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', item_type: 'Dress / Gamis', cloth_type: 'Bahan Satin Silk / Dress Jadi', size_or_meter: '5 Orang', cloth_cost: 750000, tailor_cost: 0, total_cost: 750000, status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
-  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', item_type: 'Atasan', cloth_type: 'Kemeja Batik Siap Pakai', size_or_meter: '5 Orang', cloth_cost: 600000, tailor_cost: 0, total_cost: 600000, status: 'Belum Diberikan', notes: 'Batik motif modern seragam sahabat' },
+  { recipient_name: 'Seragam Keluarga Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Bahan Kain Seragam Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar wanita (om, tante, sepupu)' },
+  { recipient_name: 'Seragam Keluarga Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Bahan Kain Seragam Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar pria (om, tante, sepupu)' },
+  { recipient_name: 'Bridesmaid', role_category: 'Bridesmaid', item_type: 'Dress / Gamis', cloth_type: 'Bahan Satin Silk / Dress Jadi', size_or_meter: '5 Orang', cloth_cost: 750000, tailor_cost: 0, total_cost: 750000, status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
+  { recipient_name: 'Groomsmen', role_category: 'Groomsmen', item_type: 'Atasan', cloth_type: 'Kemeja Batik Siap Pakai', size_or_meter: '5 Orang', cloth_cost: 600000, tailor_cost: 0, total_cost: 600000, status: 'Belum Diberikan', notes: 'Batik motif modern seragam sahabat' },
   { recipient_name: 'Panitia & Among Tamu', role_category: 'Keluarga Wanita', item_type: 'One Set', cloth_type: 'Batik / Seragam Panitia Hari H', size_or_meter: '6 Orang', cloth_cost: 900000, tailor_cost: 0, total_cost: 900000, status: 'Belum Diberikan', notes: 'Among tamu dan panitia inti' }
 ];
 
@@ -518,9 +518,11 @@ export async function onRequest(context) {
       }
       seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
     } else {
-      // Migrasi template seragam lama ke format keluarga (Pengantin Wanita & Pria)
-      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Wanita', cloth_type = 'Kain Brokat Kebaya & Batik Keluarga', notes = 'Keluarga besar wanita (om, tante, sepupu)' WHERE wedding_id = ? AND recipient_name = 'Ibu Kandung Pengantin Wanita'").bind(weddingId).run().catch(() => {});
-      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Pria', cloth_type = 'Kain Beskap & Batik Keluarga', notes = 'Keluarga besar pria (om, tante, sepupu)' WHERE wedding_id = ? AND recipient_name = 'Ibu Kandung Pengantin Pria'").bind(weddingId).run().catch(() => {});
+      // Migrasi template seragam lama ke format keluarga (Pengantin Wanita & Pria, Bridesmaid, Groomsmen)
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Wanita', cloth_type = 'Bahan Kain Seragam Keluarga', notes = 'Keluarga besar wanita (om, tante, sepupu)' WHERE wedding_id = ? AND (recipient_name = 'Ibu Kandung Pengantin Wanita' OR (recipient_name = 'Seragam Keluarga Pengantin Wanita' AND cloth_type LIKE '%Brokat%'))").bind(weddingId).run().catch(() => {});
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Pria', cloth_type = 'Bahan Kain Seragam Keluarga', notes = 'Keluarga besar pria (om, tante, sepupu)' WHERE wedding_id = ? AND (recipient_name = 'Ibu Kandung Pengantin Pria' OR (recipient_name = 'Seragam Keluarga Pengantin Pria' AND (cloth_type LIKE '%Beskap%' OR cloth_type LIKE '%Brokat%')))") .bind(weddingId).run().catch(() => {});
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Bridesmaid' WHERE wedding_id = ? AND recipient_name = 'Bridesmaid (Sahabat Pengantin)'").bind(weddingId).run().catch(() => {});
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Groomsmen' WHERE wedding_id = ? AND recipient_name = 'Groomsmen (Sahabat Pengantin)'").bind(weddingId).run().catch(() => {});
       await db.prepare("DELETE FROM seragam_items WHERE wedding_id = ? AND (recipient_name = 'Ayah Kandung Pengantin Wanita' OR recipient_name = 'Ayah Kandung Pengantin Pria')").bind(weddingId).run().catch(() => {});
       seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
     }
