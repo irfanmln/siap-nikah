@@ -27,9 +27,16 @@ const DEFAULT_BUDGET_TEMPLATES = [
   // Mahar & Seserahan
   { module: 'mahar', category: 'Logam Mulia', name: 'Emas Batangan / Perhiasan', target_cost: 10000000 },
   { module: 'mahar', category: 'Alat Sholat', name: 'Mukena & Sajadah Mahar', target_cost: 1000000 },
-  { module: 'seserahan', category: 'Skincare', name: 'Set Skincare & Bodycare', target_cost: 2000000 },
-  { module: 'seserahan', category: 'Fashion', name: 'Tas & Sepatu Kerja', target_cost: 2500000 },
-  { module: 'seserahan', category: 'Pakaian', name: 'Bahan Kebaya / Batik', target_cost: 1500000 },
+  { module: 'seserahan', category: 'Alat shalat', name: 'Set Alat Sholat & Al-Qur\'an', target_cost: 1000000 },
+  { module: 'seserahan', category: 'Skincare', name: 'Set Skincare & Perawatan Wajah', target_cost: 1500000 },
+  { module: 'seserahan', category: 'Makeup', name: 'Set Makeup & Kosmetik Lengkap', target_cost: 1200000 },
+  { module: 'seserahan', category: 'Tas', name: 'Tas Pesta / Kerja Wanita', target_cost: 1500000 },
+  { module: 'seserahan', category: 'Sepatu/heels', name: 'Sepatu / Heels Pengantin Wanita', target_cost: 1000000 },
+  { module: 'seserahan', category: 'Pakaian', name: 'Bahan Kebaya / Pakaian Pesta', target_cost: 1200000 },
+  { module: 'seserahan', category: 'Perlengkapan Tidur', name: 'Pakaian Tidur / Piyama & Lingerie', target_cost: 500000 },
+  { module: 'seserahan', category: 'Perlengkapan Mandi', name: 'Set Perlengkapan Mandi & Body Care', target_cost: 600000 },
+  { module: 'seserahan', category: 'Parfum', name: 'Parfum Favorit Pengantin', target_cost: 1000000 },
+  { module: 'seserahan', category: 'Box Seserahan', name: 'Box Akrilik & Jasa Hias Seserahan', target_cost: 800000 },
   
   // Undangan & Souvenir
   { module: 'undanganSouvenir', category: 'Souvenir', name: 'Souvenir Tamu (300 pcs)', target_cost: 2500000 },
@@ -109,27 +116,16 @@ const DEFAULT_LEGAL_DOCUMENTS = [
   { category: 'kua', name: 'Fotokopi Akta Kelahiran & Ijazah Terakhir', description: 'Untuk pencocokan ejaan nama resmi di Buku Nikah' },
   { category: 'kua', name: 'Pasfoto Berlatar Belakang Biru (2x3 & 4x6)', description: 'Ukuran 2x3 (4 lembar) & 4x6 (2 lembar), pakaian rapi' },
   { category: 'kua', name: 'Sertifikat Elsimil & Keterangan Kesehatan', description: 'Pemeriksaan kesehatan & imunisasi TT dari Puskesmas' },
-  { category: 'kua', name: 'Bukti Pembayaran PNBP Nikah (Jika di Luar KUA)', description: 'Gratis di KUA saat jam kerja, Rp 600.000 jika di luar KUA/akhir pekan' },
-  { category: 'kua', name: 'Surat Izin Orang Tua / N5 (Jika Usia < 21 Tahun)', description: 'Wajib jika usia calon pengantin di bawah 21 tahun' },
-  { category: 'kua', name: 'Akta Cerai / Akta Kematian Asli (Jika Duda/Janda)', description: 'Wajib bagi calon mempelai yang berstatus duda atau janda' },
-
-  // Catatan Sipil (Non-Muslim)
-  { category: 'sipil', name: 'Surat Keterangan Pemberkatan Perkawinan Agama', description: 'Dari Pemuka Agama / Rumah Ibadah (Gereja/Vihara/Pura)' },
-  { category: 'sipil', name: 'Surat Pengantar Nikah (N1-N4) dari Kelurahan', description: 'Formulir pengantar dari Kelurahan domisili' },
-  { category: 'sipil', name: 'Fotokopi KTP & KK Calon Mempelai', description: 'Rangkap 2 untuk arsip Disdukcapil' },
-  { category: 'sipil', name: 'Fotokopi Akta Kelahiran Calon Mempelai', description: 'Legalisir atau lampirkan dokumen asli saat verifikasi' },
-  { category: 'sipil', name: 'Fotokopi KTP 2 Orang Saksi Perkawinan', description: 'Saksi berusia minimal 21 tahun' },
-  { category: 'sipil', name: 'Pasfoto Berdampingan Berwarna 4x6 (4 Lembar)', description: 'Pria di sebelah kanan, latar belakang sesuai aturan dinas' }
+  { category: 'kua', name: 'Bukti Pembayaran PNBP Nikah (Jika di Luar KUA)', description: 'Gratis di KUA saat jam kerja, Rp 600.000 jika di luar KUA/akhir pekan' }
 ];
 
 // Template Pembagian Seragam & Panitia
 const DEFAULT_SERAGAM_TEMPLATES = [
-  { recipient_name: 'Ibu Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', cloth_cost: 350000, tailor_cost: 250000, total_cost: 600000, status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
-  { recipient_name: 'Ayah Kandung Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'One Set', cloth_type: 'Setelan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', cloth_cost: 500000, tailor_cost: 0, total_cost: 500000, status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
-  { recipient_name: 'Ibu Kandung Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya + Furing', size_or_meter: '3 Meter', cloth_cost: 350000, tailor_cost: 250000, total_cost: 600000, status: 'Sudah Diberikan', notes: 'Nuansa warna sage green' },
-  { recipient_name: 'Ayah Kandung Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'One Set', cloth_type: 'Setelan Beskap / Jas Lengkap', size_or_meter: '1 Set Bahan', cloth_cost: 500000, tailor_cost: 0, total_cost: 500000, status: 'Sudah Diberikan', notes: 'Satu set kain sinjang' },
-  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', item_type: 'Dress / Gamis', cloth_type: 'Bahan Satin Silk / Dress Jadi', size_or_meter: '2.5 Meter', cloth_cost: 250000, tailor_cost: 0, total_cost: 250000, status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
-  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', item_type: 'Atasan', cloth_type: 'Kemeja Batik Siap Pakai', size_or_meter: 'Ukuran L', cloth_cost: 150000, tailor_cost: 0, total_cost: 150000, status: 'Belum Diberikan', notes: 'Batik motif modern' }
+  { recipient_name: 'Seragam Keluarga Pengantin Wanita', role_category: 'Keluarga Wanita', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Brokat Kebaya & Batik Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar wanita (om, tante, sepupu)' },
+  { recipient_name: 'Seragam Keluarga Pengantin Pria', role_category: 'Keluarga Pria', item_type: 'Bahan Kain (Meteran)', cloth_type: 'Kain Beskap & Batik Keluarga', size_or_meter: '8 Orang', cloth_cost: 1200000, tailor_cost: 800000, total_cost: 2000000, status: 'Belum Diberikan', notes: 'Keluarga besar pria (om, tante, sepupu)' },
+  { recipient_name: 'Bridesmaid (Sahabat Pengantin)', role_category: 'Bridesmaid', item_type: 'Dress / Gamis', cloth_type: 'Bahan Satin Silk / Dress Jadi', size_or_meter: '5 Orang', cloth_cost: 750000, tailor_cost: 0, total_cost: 750000, status: 'Belum Diberikan', notes: 'Diberikan bersama bridesmaid box' },
+  { recipient_name: 'Groomsmen (Sahabat Pengantin)', role_category: 'Groomsmen', item_type: 'Atasan', cloth_type: 'Kemeja Batik Siap Pakai', size_or_meter: '5 Orang', cloth_cost: 600000, tailor_cost: 0, total_cost: 600000, status: 'Belum Diberikan', notes: 'Batik motif modern seragam sahabat' },
+  { recipient_name: 'Panitia & Among Tamu', role_category: 'Keluarga Wanita', item_type: 'One Set', cloth_type: 'Batik / Seragam Panitia Hari H', size_or_meter: '6 Orang', cloth_cost: 900000, tailor_cost: 0, total_cost: 900000, status: 'Belum Diberikan', notes: 'Among tamu dan panitia inti' }
 ];
 
 export async function onRequest(context) {
@@ -492,6 +488,10 @@ export async function onRequest(context) {
         `).bind('leg_' + Math.random().toString(36).substring(2, 9), weddingId, l.category, l.name, l.description).run();
       }
       legalRes = await db.prepare('SELECT * FROM legal_documents WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    } else {
+      // Auto-clean dokumen tidak umum (N5 / Cerai) jika belum diedit user
+      await db.prepare("DELETE FROM legal_documents WHERE wedding_id = ? AND (name LIKE '%N5%' OR name LIKE '%Cerai%')").bind(weddingId).run().catch(() => {});
+      legalRes = await db.prepare('SELECT * FROM legal_documents WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
     }
 
     // Auto-seed Seragam Items jika masih kosong
@@ -516,6 +516,12 @@ export async function onRequest(context) {
           s.notes
         ).run();
       }
+      seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
+    } else {
+      // Migrasi template seragam lama ke format keluarga (Pengantin Wanita & Pria)
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Wanita', cloth_type = 'Kain Brokat Kebaya & Batik Keluarga', notes = 'Keluarga besar wanita (om, tante, sepupu)' WHERE wedding_id = ? AND recipient_name = 'Ibu Kandung Pengantin Wanita'").bind(weddingId).run().catch(() => {});
+      await db.prepare("UPDATE seragam_items SET recipient_name = 'Seragam Keluarga Pengantin Pria', cloth_type = 'Kain Beskap & Batik Keluarga', notes = 'Keluarga besar pria (om, tante, sepupu)' WHERE wedding_id = ? AND recipient_name = 'Ibu Kandung Pengantin Pria'").bind(weddingId).run().catch(() => {});
+      await db.prepare("DELETE FROM seragam_items WHERE wedding_id = ? AND (recipient_name = 'Ayah Kandung Pengantin Wanita' OR recipient_name = 'Ayah Kandung Pengantin Pria')").bind(weddingId).run().catch(() => {});
       seragamRes = await db.prepare('SELECT * FROM seragam_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
     }
 
@@ -574,31 +580,48 @@ export async function onRequest(context) {
     return json({ success: true });
   }
 
-  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, dll)
+  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, undangan-souvenir)
   const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir'];
-  for (const mod of budgetModules) {
-    if (path.startsWith(mod)) {
-      const parts = path.split('/');
-      const itemId = parts[1];
+  let routeModule = null;
+  let routeItemId = null;
 
-      // ADD
-      if (request.method === 'POST' && !itemId) {
-        const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
-        if (!wedding?.is_premium) {
-          const countRes = await db.prepare('SELECT COUNT(*) as count FROM budget_items WHERE wedding_id = ? AND module = ?').bind(weddingId, mod).first();
-          const limits = {
-            wedding: 7,
-            seserahan: 5,
-            mahar: 3,
-            undanganSouvenir: 3
-          };
-          const maxAllowed = limits[mod] || 5;
-          if ((countRes?.count || 0) >= maxAllowed) {
-            return json({
-              error: `Batas kuota akun Gratis tercapai (maksimal ${maxAllowed} item untuk ${mod}). Silakan upgrade ke Siap Nikah VIP untuk pos anggaran tanpa batas!`
-            }, 403);
-          }
+  if (path.startsWith('undangan-souvenir') || path.startsWith('undanganSouvenir')) {
+    routeModule = 'undanganSouvenir';
+    const parts = path.split('/');
+    routeItemId = parts[1];
+  } else {
+    for (const mod of budgetModules) {
+      if (path.startsWith(mod)) {
+        routeModule = mod;
+        const parts = path.split('/');
+        routeItemId = parts[1];
+        break;
+      }
+    }
+  }
+
+  if (routeModule) {
+    const mod = routeModule;
+    const itemId = routeItemId;
+
+    // ADD
+    if (request.method === 'POST' && !itemId) {
+      const wedding = await db.prepare('SELECT is_premium FROM weddings WHERE id = ?').bind(weddingId).first();
+      if (!wedding?.is_premium) {
+        const countRes = await db.prepare('SELECT COUNT(*) as count FROM budget_items WHERE wedding_id = ? AND module = ?').bind(weddingId, mod).first();
+        const limits = {
+          wedding: 8,
+          seserahan: 12,
+          mahar: 5,
+          undanganSouvenir: 6
+        };
+        const maxAllowed = limits[mod] || 6;
+        if ((countRes?.count || 0) >= maxAllowed) {
+          return json({
+            error: `Batas kuota akun Gratis tercapai (maksimal ${maxAllowed} item untuk ${mod}). Silakan upgrade ke Siap Nikah VIP untuk pos anggaran tanpa batas!`
+          }, 403);
         }
+      }
 
         const item = await request.json();
         const newId = 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
@@ -713,7 +736,6 @@ export async function onRequest(context) {
         return json({ success: true });
       }
     }
-  }
 
   // 7. TABUNGAN CRUD
   if (path.startsWith('tabungan')) {

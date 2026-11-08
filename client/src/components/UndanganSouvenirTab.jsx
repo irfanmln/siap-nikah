@@ -65,11 +65,11 @@ export default function UndanganSouvenirTab({
   };
 
   const handleOpenAdd = () => {
-    if (!isPremium && undanganSouvenir.length >= 3) {
+    if (!isPremium && undanganSouvenir.length >= 6) {
       if (onRequireVip) {
-        onRequireVip('Batas kuota 3 item pengadaan di akun Gratis tercapai. Upgrade ke VIP seumur hidup untuk rincian tanpa batas!');
+        onRequireVip('Batas kuota 6 item pengadaan di akun Gratis tercapai. Upgrade ke VIP seumur hidup untuk rincian tanpa batas!');
       } else {
-        alert('Batas kuota 3 item pengadaan di akun Gratis tercapai.');
+        alert('Batas kuota 6 item pengadaan di akun Gratis tercapai.');
       }
       return;
     }
@@ -151,7 +151,7 @@ export default function UndanganSouvenirTab({
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Undangan & Souvenir</h2>
             {!isPremium ? (
               <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-200 whitespace-nowrap shrink-0">
-                Kuota Gratis: {undanganSouvenir.length}/3 Pos
+                Kuota Gratis: {undanganSouvenir.length}/6 Pos
               </span>
             ) : (
               <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 whitespace-nowrap shrink-0">

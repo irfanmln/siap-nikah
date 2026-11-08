@@ -115,11 +115,11 @@ export default function SeserahanTab({
   };
 
   const handleOpenAdd = () => {
-    if (!isPremium && seserahan.length >= 5) {
+    if (!isPremium && seserahan.length >= 12) {
       if (onRequireVip) {
-        onRequireVip('Batas kuota 5 item seserahan di akun Gratis tercapai. Upgrade ke VIP seumur hidup untuk checklist seserahan tanpa batas!');
+        onRequireVip('Batas kuota 12 item seserahan di akun Gratis tercapai. Upgrade ke VIP seumur hidup untuk checklist seserahan tanpa batas!');
       } else {
-        alert('Batas kuota 5 item seserahan di akun Gratis tercapai.');
+        alert('Batas kuota 12 item seserahan di akun Gratis tercapai.');
       }
       return;
     }
@@ -195,7 +195,7 @@ export default function SeserahanTab({
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Daftar Kebutuhan Seserahan</h2>
             {!isPremium ? (
               <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-200 whitespace-nowrap shrink-0">
-                Kuota Gratis: {seserahan.length}/5 Item
+                Kuota Gratis: {seserahan.length}/12 Item
               </span>
             ) : (
               <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 whitespace-nowrap shrink-0">
