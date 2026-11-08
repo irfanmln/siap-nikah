@@ -12,6 +12,7 @@ import {
   Check
 } from 'lucide-react';
 import { addTimelineItem, updateTimelineItem, deleteTimelineItem } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 const PHASES = [
   'Semua',
@@ -38,6 +39,8 @@ export default function TimelineTab({
   const [selectedAssignee, setSelectedAssignee] = useState('Semua');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     phase: 'H-1 Bulan',

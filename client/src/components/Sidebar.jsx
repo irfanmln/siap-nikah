@@ -149,15 +149,23 @@ export default function Sidebar({
         
         {/* Brand Header */}
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-400 p-0.5 shadow-xs flex items-center justify-center shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveTab('dashboard');
+              setIsMobileOpen?.(false);
+            }}
+            className="flex items-center space-x-2.5 text-left cursor-pointer group focus:outline-none"
+            title="Kembali ke Dashboard Utama"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-400 p-0.5 shadow-xs flex items-center justify-center shrink-0 group-hover:scale-105 transition">
               <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
                 <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-serif font-bold text-lg text-stone-900 leading-none">
+                <span className="font-serif font-bold text-lg text-stone-900 leading-none group-hover:text-rose-600 transition">
                   Siap Nikah
                 </span>
                 <span className="text-[9px] uppercase px-1.5 py-0.2 rounded-md bg-rose-100 text-rose-700 font-bold">
@@ -166,7 +174,7 @@ export default function Sidebar({
               </div>
               <p className="text-[11px] text-stone-400 mt-0.5">Wedding Planning Suite</p>
             </div>
-          </div>
+          </button>
 
           {/* Close button on mobile drawer */}
           <button

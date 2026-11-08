@@ -14,6 +14,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { addLegalDocument, updateLegalDocument, deleteLegalDocument } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function LegalDocTab({
   legalDocuments = [],
@@ -25,6 +26,8 @@ export default function LegalDocTab({
   const [selectedCategory, setSelectedCategory] = useState('kua'); // 'kua' | 'sipil'
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     category: 'kua',

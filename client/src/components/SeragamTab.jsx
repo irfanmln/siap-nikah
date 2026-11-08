@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
 import { addSeragamItem, updateSeragamItem, deleteSeragamItem } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 const ROLE_OPTIONS = [
   'Semua',
@@ -44,6 +45,8 @@ export default function SeragamTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     recipientName: '',

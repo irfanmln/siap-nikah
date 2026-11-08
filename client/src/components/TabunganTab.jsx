@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah, formatDate } from '../utils/formatters';
 import { addTabungan, updateTabungan, deleteTabungan } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function TabunganTab({
   tabungan = [],
@@ -34,6 +35,8 @@ export default function TabunganTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const groomName = metadata?.groom || 'Pria';
   const brideName = metadata?.bride || 'Wanita';

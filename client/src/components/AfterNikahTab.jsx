@@ -10,6 +10,7 @@ import {
 import confetti from 'canvas-confetti';
 import { formatRupiah } from '../utils/formatters';
 import { addAfterNikah, updateAfterNikah, deleteAfterNikah } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function AfterNikahTab({
   afterNikah = [],
@@ -25,6 +26,8 @@ export default function AfterNikahTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     name: '',

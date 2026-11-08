@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
 import { addUndangan, updateUndangan, deleteUndangan } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function UndanganSouvenirTab({
   undanganSouvenir = [],
@@ -24,6 +25,8 @@ export default function UndanganSouvenirTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     type: 'Undangan',

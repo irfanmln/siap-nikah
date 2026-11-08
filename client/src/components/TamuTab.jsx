@@ -13,6 +13,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { addTamu, updateTamu, deleteTamu } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function TamuTab({
   tamuUndangan = [],
@@ -44,6 +45,8 @@ export default function TamuTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     name: '',

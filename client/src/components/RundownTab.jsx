@@ -10,6 +10,7 @@ import {
   Check
 } from 'lucide-react';
 import { addRundownItem, updateRundownItem, deleteRundownItem } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function RundownTab({
   rundown = [],
@@ -23,6 +24,8 @@ export default function RundownTab({
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     timeStart: '08:00',

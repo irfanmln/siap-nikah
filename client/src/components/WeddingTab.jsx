@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
 import { addWedding, updateWedding, deleteWedding } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function WeddingTab({
   wedding = [],
@@ -18,6 +19,8 @@ export default function WeddingTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     category: 'Paket Resepsi & Dekor',

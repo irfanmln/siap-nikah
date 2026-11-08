@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
 import { addMahar, updateMahar, deleteMahar } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 export default function MaharTab({
   mahar = [],
@@ -22,6 +23,8 @@ export default function MaharTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   // Dynamic Gold Price Calculator
   const [goldPrice, setGoldPrice] = useState(metadata?.goldPricePerGram || 2700000);

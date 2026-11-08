@@ -17,6 +17,7 @@ import {
 import confetti from 'canvas-confetti';
 import { formatRupiah } from '../utils/formatters';
 import { addSeserahan, updateSeserahan, deleteSeserahan } from '../utils/api';
+import { useModalBack } from '../utils/useModalBack';
 
 const DEFAULT_CATEGORIES = [
   'Pakaian',
@@ -51,6 +52,8 @@ export default function SeserahanTab({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  useModalBack(isModalOpen, () => setIsModalOpen(false));
 
   const [formData, setFormData] = useState({
     category: 'Pakaian',

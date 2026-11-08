@@ -35,6 +35,7 @@ import CreateWeddingModal from './components/CreateWeddingModal';
 import InvitePartnerModal from './components/InvitePartnerModal';
 import UpgradeVipModal from './components/UpgradeVipModal';
 import AdminPanel from './components/AdminPanel';
+import { useModalBack } from './utils/useModalBack';
 import {
   fetchDb,
   fetchCurrentUserApi,
@@ -59,6 +60,11 @@ const TABS = [
   { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home }
 ];
 
+const getTabFromHash = () => {
+  const hash = window.location.hash.replace('#', '');
+  return TABS.some(t => t.id === hash) ? hash : 'dashboard';
+};
+
 export default function App() {
   // Auth state
   const [user, setUser] = useState(null);
@@ -82,12 +88,47 @@ export default function App() {
     localStorage.setItem('wedding_active_actor', actor);
   };
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTabState] = useState(getTabFromHash);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [vipFeaturePrompt, setVipFeaturePrompt] = useState('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Handle mobile Back button to close drawer and modals instead of exiting browser
+  useModalBack(isMobileOpen, () => setIsMobileOpen(false));
+  useModalBack(isSettingsOpen, () => setIsSettingsOpen(false));
+  useModalBack(isInviteOpen, () => setIsInviteOpen(false));
+  useModalBack(isVipModalOpen, () => {
+    setIsVipModalOpen(false);
+    setVipFeaturePrompt('');
+  });
+
+  const handleSelectTab = (tabId, pushHistory = true) => {
+    setActiveTabState(tabId);
+    setIsMobileOpen(false);
+    if (pushHistory) {
+      if (tabId === 'dashboard') {
+        const cleanUrl = window.location.pathname + window.location.search;
+        window.history.pushState({ tab: 'dashboard' }, '', cleanUrl);
+      } else {
+        window.history.pushState({ tab: tabId }, '', `#${tabId}`);
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Sync tab on browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = (e) => {
+      if (e.state?.modal) return;
+      const targetTab = e.state?.tab || getTabFromHash();
+      setActiveTabState(targetTab);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Admin access check
   const ADMIN_EMAILS = ['irfanm991@gmail.com', 'halo.weddingplan@gmail.com'];
@@ -423,7 +464,7 @@ export default function App() {
       {/* Left Sidebar (Desktop Fixed + Mobile Slide Drawer) */}
       <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleSelectTab}
         metadata={db?.metadata}
         activeActor={effectiveActor}
         setActiveActor={setActiveActor}
@@ -472,10 +513,15 @@ export default function App() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => handleSelectTab('dashboard')}
+              className="flex items-center gap-1.5 cursor-pointer text-left focus:outline-none"
+              title="Kembali ke Dashboard Utama"
+            >
               <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
               <span className="font-serif font-bold text-stone-900 text-sm">Siap Nikah</span>
-            </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -551,9 +597,9 @@ export default function App() {
         {activeTab === 'dashboard' && (
           <DashboardTab
             db={db}
-            onSwitchTab={(t) => setActiveTab(t)}
-            onQuickAddTabungan={() => setActiveTab('tabungan')}
-            onQuickAddSeserahan={() => setActiveTab('seserahan')}
+            onSwitchTab={(t) => handleSelectTab(t)}
+            onQuickAddTabungan={() => handleSelectTab('tabungan')}
+            onQuickAddSeserahan={() => handleSelectTab('seserahan')}
             onOpenInvite={handleOpenInvite}
             onOpenUpgradeVip={() => {
               setVipFeaturePrompt('');
@@ -715,11 +761,16 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-white border-t border-stone-200/80 py-5 text-center text-xs text-stone-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={() => handleSelectTab('dashboard')}
+            className="flex items-center space-x-2 text-stone-800 hover:text-rose-600 transition cursor-pointer"
+            title="Kembali ke Dashboard Utama"
+          >
             <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-            <span className="font-serif font-bold text-stone-800">Siap Nikah</span>
-            <span>• Platform Perencanaan Anggaran & Persiapan Pernikahan Impian</span>
-          </div>
+            <span className="font-serif font-bold">Siap Nikah</span>
+            <span className="text-stone-400 font-normal hidden sm:inline">• Platform Perencanaan Anggaran & Persiapan Pernikahan Impian</span>
+          </button>
           <div>
             &copy; 2026 Siap Nikah. Semua hak dilindungi.
           </div>

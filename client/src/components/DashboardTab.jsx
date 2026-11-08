@@ -3,18 +3,16 @@ import {
   Wallet,
   Target,
   TrendingUp,
-  Heart,
   Gift,
-  CheckCircle2,
-  Users,
-  Home,
+  Coins,
+  Store,
+  Mail,
   Clock,
   ArrowUpRight,
-  ShieldCheck,
   ChevronRight,
   Crown
 } from 'lucide-react';
-import { formatRupiah, getDaysUntil, formatDate } from '../utils/formatters';
+import { formatRupiah, getDaysUntil } from '../utils/formatters';
 
 export default function DashboardTab({
   db,
@@ -80,7 +78,7 @@ export default function DashboardTab({
               <span>Bismillah Menuju Akad & Resepsi</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white tracking-tight">
-              Pernikahan {metadata?.groom || 'Irfan'} & {metadata?.bride || 'Kania'}
+              Pernikahan {groomName} & {brideName}
             </h2>
             <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
               "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya."
@@ -159,356 +157,520 @@ export default function DashboardTab({
         </div>
       )}
 
-      {/* Top 4 Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        {/* Card 1: Tabungan Terkumpul */}
-        <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Total Tabungan</span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
-            </div>
+      {/* SECTION 1 (TOP): RINCIAN ANGGARAN KEBUTUHAN */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <h3 className="font-serif font-bold text-lg text-stone-900">Rincian Anggaran Kebutuhan</h3>
+            <p className="text-xs text-stone-500">Estimasi total biaya per pos kebutuhan acara pernikahan</p>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-stone-900">{formatRupiah(totalSavings)}</div>
-            <div className="flex items-center justify-between text-xs text-stone-500 mt-2">
-              <span>Target: {formatRupiah(targetSavings)}</span>
-              <span className="font-semibold text-emerald-600">{savingsPercent}%</span>
-            </div>
-            {/* Progress bar */}
-            <div className="w-full bg-stone-100 h-2.5 rounded-full mt-1.5 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
-                style={{ width: `${savingsPercent}%` }}
-              />
-            </div>
-          </div>
+          <span className="self-start sm:self-auto text-xs font-bold px-3 py-1 bg-rose-50 text-rose-700 rounded-full border border-rose-200/80">
+            Total Estimasi: {formatRupiah(grandTotalBudget)}
+          </span>
         </div>
 
-        {/* Card 2: Sisa Target Kekurangan */}
-        <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Sisa Kekurangan</span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Target className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-amber-700">{formatRupiah(shortage)}</div>
-            <p className="text-xs text-stone-500 mt-1">
-              {shortage === 0 ? '🎉 Target tercapai penuh!' : `Perlu dikumpulkan berdua untuk mencapai ${formatRupiah(targetSavings)}`}
-            </p>
-          </div>
-        </div>
-
-        {/* Card 3: Total Estimasi Biaya */}
-        <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Estimasi Biaya Acara</span>
-            <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-stone-900">{formatRupiah(grandTotalBudget)}</div>
-            <p className="text-xs text-stone-500 mt-1">
-              Vendor, Mahar, Seserahan & Undangan
-            </p>
-          </div>
-        </div>
-
-        {/* Card 4: Kesiapan Item & Vendor */}
-        <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md transition">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Seserahan Terbeli</span>
-            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
-              <Gift className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-bold text-stone-900">
-              {seserahanBoughtCount} <span className="text-sm font-normal text-stone-500">/ {seserahan.length} item</span>
-            </div>
-            <div className="flex items-center justify-between text-xs text-stone-500 mt-2">
-              <span>Biaya Terbeli: {formatRupiah(boughtSeserahan)}</span>
-              <span className="font-semibold text-purple-600">
-                {seserahan.length > 0 ? Math.round((seserahanBoughtCount / seserahan.length) * 100) : 0}%
-              </span>
-            </div>
-            <div className="w-full bg-stone-100 h-2.5 rounded-full mt-1.5 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-purple-500 to-rose-400 h-full rounded-full transition-all duration-500"
-                style={{ width: `${seserahan.length > 0 ? (seserahanBoughtCount / seserahan.length) * 100 : 0}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Row 2: Kontribusi Tabungan Irfan vs Kania & Alokasi Anggaran */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* Kontribusi Tabungan Irfan & Kania */}
-        <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">Kontribusi Tabungan Berdua</h3>
-              <p className="text-xs text-stone-500">Transparansi setoran tabungan {groomName} & {brideName}</p>
-            </div>
-            <button
-              onClick={() => onSwitchTab('tabungan')}
-              className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center cursor-pointer"
-            >
-              Lihat Riwayat <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-          </div>
-
-          {/* Dual Bars */}
-          <div className="space-y-4">
-            
-            {/* Groom Bar */}
-            <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/60">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">🤵</span>
-                  <div>
-                    <span className="font-semibold text-sm text-stone-800">{groomName}</span>
-                    <span className="text-xs text-stone-400 ml-2">
-                      ({tabungan.filter(t => (t.contributor || '').toLowerCase().includes(groomName.toLowerCase())).length} kali setoran)
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-sm text-stone-900">{formatRupiah(irfanSavings)}</div>
-                  <div className="text-xs text-stone-500">{irfanPercent}% dari total</div>
-                </div>
-              </div>
-              <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
-                <div className="bg-stone-800 h-full rounded-full transition-all duration-500" style={{ width: `${irfanPercent}%` }} />
-              </div>
-            </div>
-
-            {/* Bride Bar */}
-            <div className="p-4 bg-rose-50/50 rounded-2xl border border-rose-200/60">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl">👰</span>
-                  <div>
-                    <span className="font-semibold text-sm text-rose-950">{brideName}</span>
-                    <span className="text-xs text-rose-400 ml-2">
-                      ({tabungan.filter(t => (t.contributor || '').toLowerCase().includes(brideName.toLowerCase())).length} kali setoran)
-                    </span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-sm text-rose-900">{formatRupiah(kaniaSavings)}</div>
-                  <div className="text-xs text-rose-500">{kaniaPercent}% dari total</div>
-                </div>
-              </div>
-              <div className="w-full bg-rose-200 h-2 rounded-full overflow-hidden">
-                <div className="bg-rose-500 h-full rounded-full transition-all duration-500" style={{ width: `${kaniaPercent}%` }} />
-              </div>
-            </div>
-
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
-            <span>Total Bersama: <strong className="text-stone-800 font-bold">{formatRupiah(totalSavings)}</strong></span>
-            <span>Rasio: <strong className="text-rose-600 font-bold">{irfanPercent}% : {kaniaPercent}%</strong></span>
-          </div>
-        </div>
-
-        {/* Breakdown Alokasi Anggaran */}
-        <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">Rincian Anggaran Kebutuhan</h3>
-              <p className="text-xs text-stone-500">Estimasi total biaya per kategori</p>
-            </div>
-            <span className="text-xs font-bold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
-              {formatRupiah(grandTotalBudget)}
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            
-            {/* Vendor & Resepsi */}
-            <div
-              onClick={() => onSwitchTab('wedding')}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-stone-50 transition cursor-pointer border border-transparent hover:border-stone-200"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xs">
-                  🎪
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-stone-800">Vendor Resepsi & Acara</div>
-                  <div className="text-xs text-stone-400">{wedding.length} vendor ({vendorDealCount} deal/DP)</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-stone-900">{formatRupiah(totalWeddingVendors)}</div>
-                <div className="text-xs text-emerald-600 font-medium">DP Terbayar: {formatRupiah(dpWeddingVendors)}</div>
-              </div>
-            </div>
-
-            {/* Mahar */}
-            <div
-              onClick={() => onSwitchTab('mahar')}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-stone-50 transition cursor-pointer border border-transparent hover:border-stone-200"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">
-                  💍
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-stone-800">Mahar Pernikahan</div>
-                  <div className="text-xs text-stone-400">Cincin spilla/aulova, LM 8gr, uang seri</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-stone-900">{formatRupiah(totalMahar)}</div>
-                <div className="text-xs text-stone-400">{mahar.length} item mahar</div>
-              </div>
-            </div>
-
-            {/* Seserahan */}
-            <div
-              onClick={() => onSwitchTab('seserahan')}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-stone-50 transition cursor-pointer border border-transparent hover:border-stone-200"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-xs">
-                  🎁
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-stone-800">Seserahan</div>
-                  <div className="text-xs text-stone-400">{seserahanBoughtCount} dari {seserahan.length} item terbeli</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-stone-900">{formatRupiah(totalSeserahan)}</div>
-                <div className="text-xs text-purple-600">Sisa: {formatRupiah(totalSeserahan - boughtSeserahan)}</div>
-              </div>
-            </div>
-
-            {/* Undangan & Souvenir */}
-            <div
-              onClick={() => onSwitchTab('undangan')}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-stone-50 transition cursor-pointer border border-transparent hover:border-stone-200"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
-                  💌
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-stone-800">Undangan & Souvenir</div>
-                  <div className="text-xs text-stone-400">Fisik (1000 pcs), Digital, Souvenir (400 pcs)</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-stone-900">{formatRupiah(totalUndangan)}</div>
-                <div className="text-xs text-stone-400">{undanganSouvenir.length} item</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-      {/* Row 3: Wedding Readiness Quick Cards & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Readiness Checklist Quick Access */}
-        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* 4 Stat Cards: Budget Breakdown */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          {/* Tamu Undangan Card */}
-          <div
-            onClick={() => onSwitchTab('tamu')}
-            className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-2xl">👥</span>
-              <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 transition" />
-            </div>
-            <h4 className="font-serif font-bold text-stone-900 mt-3">Daftar Tamu</h4>
-            <p className="text-xs text-stone-500 mt-0.5">Keluarga {groomName}, {brideName} & Rekan</p>
-            <div className="mt-3 text-lg font-bold text-stone-900">
-              {tamuCount} <span className="text-xs font-normal text-stone-500">undangan ({totalPax} pax)</span>
-            </div>
-          </div>
-
-          {/* After Nikah Card */}
-          <div
-            onClick={() => onSwitchTab('afternikah')}
-            className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-2xl">🏡</span>
-              <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 transition" />
-            </div>
-            <h4 className="font-serif font-bold text-stone-900 mt-3">After Nikah</h4>
-            <p className="text-xs text-stone-500 mt-0.5">Perabot & kebutuhan rumah baru</p>
-            <div className="mt-3 text-lg font-bold text-stone-900">
-              {afterNikahCount} <span className="text-xs font-normal text-stone-500">/ {afterNikah.length} siap</span>
-            </div>
-          </div>
-
-          {/* Vendors Card */}
+          {/* Card 1: Total Estimasi Biaya */}
           <div
             onClick={() => onSwitchTab('wedding')}
             className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-2xl">🏛️</span>
-              <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 transition" />
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Total Estimasi Kebutuhan</span>
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition">
+                <TrendingUp className="w-5 h-5" />
+              </div>
             </div>
-            <h4 className="font-serif font-bold text-stone-900 mt-3">Vendor Hari H</h4>
-            <p className="text-xs text-stone-500 mt-0.5">Makeup, WO, Foto, KUA, Hiburan</p>
-            <div className="mt-3 text-lg font-bold text-stone-900">
-              {vendorDealCount} <span className="text-xs font-normal text-stone-500">/ {wedding.length} deal</span>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-stone-900">{formatRupiah(grandTotalBudget)}</div>
+              <p className="text-xs text-stone-500 mt-1 flex items-center justify-between">
+                <span>Vendor, Mahar, Seserahan & Undangan</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-rose-600" />
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: Vendor & Resepsi */}
+          <div
+            onClick={() => onSwitchTab('wedding')}
+            className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Vendor & Resepsi</span>
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition">
+                <Store className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-stone-900">{formatRupiah(totalWeddingVendors)}</div>
+              <div className="flex items-center justify-between text-xs text-stone-500 mt-2">
+                <span>DP: {formatRupiah(dpWeddingVendors)}</span>
+                <span className="font-semibold text-amber-700">{wedding.length} vendor ({vendorDealCount} deal)</span>
+              </div>
+              <div className="w-full bg-stone-100 h-2 rounded-full mt-1.5 overflow-hidden">
+                <div
+                  className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${totalWeddingVendors > 0 ? Math.min(100, (dpWeddingVendors / totalWeddingVendors) * 100) : 0}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Mahar Pernikahan */}
+          <div
+            onClick={() => onSwitchTab('mahar')}
+            className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Mahar Pernikahan</span>
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition">
+                <Coins className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-stone-900">{formatRupiah(totalMahar)}</div>
+              <p className="text-xs text-stone-500 mt-2 flex items-center justify-between">
+                <span>{mahar.length} item mahar</span>
+                <span className="text-emerald-700 font-semibold">Cincin & Logam Mulia</span>
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Seserahan & Hantaran */}
+          <div
+            onClick={() => onSwitchTab('seserahan')}
+            className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Seserahan & Hantaran</span>
+              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition">
+                <Gift className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-stone-900">{formatRupiah(totalSeserahan)}</div>
+              <div className="flex items-center justify-between text-xs text-stone-500 mt-2">
+                <span>Terbeli: {formatRupiah(boughtSeserahan)}</span>
+                <span className="font-semibold text-purple-700">
+                  {seserahanBoughtCount}/{seserahan.length} item
+                </span>
+              </div>
+              <div className="w-full bg-stone-100 h-2 rounded-full mt-1.5 overflow-hidden">
+                <div
+                  className="bg-purple-500 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${seserahan.length > 0 ? (seserahanBoughtCount / seserahan.length) * 100 : 0}%` }}
+                />
+              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Activity Feed */}
-        <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs flex flex-col">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-serif font-bold text-base text-stone-900 flex items-center">
-              <Clock className="w-4 h-4 mr-1.5 text-rose-500" /> Aktivitas Terakhir
-            </h3>
-            <span className="text-[11px] text-stone-400">Real-time sync</span>
-          </div>
+        {/* Row Breakdown List & Kesiapan Acara */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Breakdown Alokasi Anggaran (Left 7 cols) */}
+          <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="font-serif font-bold text-base text-stone-900">Alokasi Anggaran & Kategori Biaya</h4>
+                <p className="text-xs text-stone-500">Klik item untuk membuka dan mengelola rincian</p>
+              </div>
+              <button
+                onClick={() => onSwitchTab('wedding')}
+                className="text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center cursor-pointer"
+              >
+                Kelola Vendor <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+              </button>
+            </div>
 
-          <div className="space-y-3 overflow-y-auto max-h-64 pr-1 text-xs">
-            {activityLogs && activityLogs.length > 0 ? (
-              activityLogs.slice(0, 6).map((log) => (
-                <div key={log.id} className="p-2.5 rounded-xl bg-stone-50 border border-stone-100 flex items-start space-x-2.5">
-                  <span className="text-sm shrink-0">
-                    {log.user === groomName ? '🤵' : log.user === brideName ? '👰' : '✨'}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-stone-800">{log.user}</span>
-                      <span className="text-[10px] text-stone-400">
-                        {new Date(log.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+            <div className="space-y-3">
+              
+              {/* Vendor & Resepsi */}
+              <div
+                onClick={() => onSwitchTab('wedding')}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs border border-amber-200/60">
+                    🎪
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
+                      <span>Vendor Resepsi & Acara</span>
+                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
                     </div>
-                    <p className="text-stone-600 mt-0.5 truncate">{log.details || log.action}</p>
+                    <div className="text-xs text-stone-400">{wedding.length} vendor tercatat ({vendorDealCount} sudah deal/DP)</div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-stone-400 text-center py-6">Belum ada catatan aktivitas.</p>
-            )}
+                <div className="text-right">
+                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalWeddingVendors)}</div>
+                  <div className="text-xs text-emerald-600 font-medium">DP Terbayar: {formatRupiah(dpWeddingVendors)}</div>
+                </div>
+              </div>
+
+              {/* Mahar */}
+              <div
+                onClick={() => onSwitchTab('mahar')}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs border border-emerald-200/60">
+                    💍
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
+                      <span>Mahar Pernikahan</span>
+                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
+                    </div>
+                    <div className="text-xs text-stone-400">{mahar.length} item mahar (Logam Mulia, Cincin Kawin)</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalMahar)}</div>
+                  <div className="text-xs text-stone-400">{mahar.length} item</div>
+                </div>
+              </div>
+
+              {/* Seserahan */}
+              <div
+                onClick={() => onSwitchTab('seserahan')}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center font-bold text-xs border border-purple-200/60">
+                    🎁
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
+                      <span>Seserahan & Hantaran</span>
+                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
+                    </div>
+                    <div className="text-xs text-stone-400">{seserahanBoughtCount} dari {seserahan.length} item telah dibeli</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalSeserahan)}</div>
+                  <div className="text-xs text-purple-600">Sisa Belanja: {formatRupiah(totalSeserahan - boughtSeserahan)}</div>
+                </div>
+              </div>
+
+              {/* Undangan & Souvenir */}
+              <div
+                onClick={() => onSwitchTab('undangan')}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-xs border border-blue-200/60">
+                    💌
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
+                      <span>Undangan & Souvenir</span>
+                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
+                    </div>
+                    <div className="text-xs text-stone-400">Undangan fisik, digital, dan souvenir tamu</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalUndangan)}</div>
+                  <div className="text-xs text-stone-400">{undanganSouvenir.length} item</div>
+                </div>
+              </div>
+
+              {/* Wishlist After Nikah (Opsional) */}
+              <div
+                onClick={() => onSwitchTab('afternikah')}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs border border-teal-200/60">
+                    🏡
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
+                      <span>Wishlist Kebutuhan Rumah (After Nikah)</span>
+                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
+                    </div>
+                    <div className="text-xs text-stone-400">{afterNikahCount} dari {afterNikah.length} kebutuhan siap / kado</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalAfterNikah)}</div>
+                  <div className="text-xs text-stone-400">{afterNikah.length} item</div>
+                </div>
+              </div>
+
+            </div>
           </div>
+
+          {/* Kesiapan Acara & Tamu (Right 5 cols) */}
+          <div className="lg:col-span-5 space-y-4">
+            
+            {/* Tamu Undangan Card */}
+            <div
+              onClick={() => onSwitchTab('tamu')}
+              className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <span className="text-2xl">👥</span>
+                  <div>
+                    <h4 className="font-serif font-bold text-stone-900">Daftar Tamu Undangan</h4>
+                    <p className="text-xs text-stone-500">Keluarga {groomName}, {brideName} & Rekan</p>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 transition" />
+              </div>
+              <div className="mt-3 pt-3 border-t border-stone-100 flex items-baseline justify-between">
+                <span className="text-xs text-stone-500">Estimasi Total Pax:</span>
+                <span className="text-lg font-bold text-stone-900">
+                  {tamuCount} <span className="text-xs font-normal text-stone-500">undangan ({totalPax} pax)</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Vendor Hari H Quick Card */}
+            <div
+              onClick={() => onSwitchTab('wedding')}
+              className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs hover:shadow-md hover:border-rose-300 transition cursor-pointer group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <span className="text-2xl">🏛️</span>
+                  <div>
+                    <h4 className="font-serif font-bold text-stone-900">Kesiapan Vendor Acara</h4>
+                    <p className="text-xs text-stone-500">Venue, Makeup, WO, Foto, KUA, Catering</p>
+                  </div>
+                </div>
+                <ArrowUpRight className="w-4 h-4 text-stone-400 group-hover:text-rose-500 transition" />
+              </div>
+              <div className="mt-3 pt-3 border-t border-stone-100 flex items-baseline justify-between">
+                <span className="text-xs text-stone-500">Vendor Terkonfirmasi / DP:</span>
+                <span className="text-lg font-bold text-stone-900">
+                  {vendorDealCount} <span className="text-xs font-normal text-stone-500">/ {wedding.length} deal</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Timeline & Rundown Quick Shortcut */}
+            <div className="grid grid-cols-2 gap-3">
+              <div
+                onClick={() => onSwitchTab('timeline')}
+                className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs hover:border-rose-300 hover:shadow-sm transition cursor-pointer group"
+              >
+                <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Timeline</div>
+                <div className="text-sm font-bold text-stone-900 mt-1 flex items-center justify-between">
+                  <span>Checklist H-</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-rose-500" />
+                </div>
+                <p className="text-[11px] text-stone-400 mt-0.5">Panduan jadwal berkala</p>
+              </div>
+
+              <div
+                onClick={() => onSwitchTab('rundown')}
+                className="bg-white p-4 rounded-2xl border border-stone-200/80 shadow-xs hover:border-rose-300 hover:shadow-sm transition cursor-pointer group"
+              >
+                <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Rundown</div>
+                <div className="text-sm font-bold text-stone-900 mt-1 flex items-center justify-between">
+                  <span>Hari H</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-rose-500" />
+                </div>
+                <p className="text-[11px] text-stone-400 mt-0.5">Susunan jadwal acara</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* SECTION 2 (BOTTOM): RINGKASAN TABUNGAN BERSAMA & KONTRIBUSI BERDUA */}
+      <section className="space-y-4 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <h3 className="font-serif font-bold text-lg text-stone-900">Ringkasan Tabungan Bersama & Kontribusi</h3>
+            <p className="text-xs text-stone-500">Transparansi setoran dan perbandingan dana terkumpul terhadap target</p>
+          </div>
+          <button
+            onClick={() => onSwitchTab('tabungan')}
+            className="self-start sm:self-auto text-xs font-semibold text-rose-600 hover:text-rose-700 flex items-center cursor-pointer"
+          >
+            Buka Tabungan Lengkap <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+          </button>
         </div>
 
-      </div>
+        {/* Tabungan Overview Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          {/* Card: Total Tabungan */}
+          <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Total Tabungan Terkumpul</span>
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <Wallet className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-stone-900">{formatRupiah(totalSavings)}</div>
+              <div className="flex items-center justify-between text-xs text-stone-500 mt-2">
+                <span>Target: {formatRupiah(targetSavings)}</span>
+                <span className="font-semibold text-emerald-600">{savingsPercent}%</span>
+              </div>
+              <div className="w-full bg-stone-100 h-2.5 rounded-full mt-1.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${savingsPercent}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Sisa Kekurangan Tabungan */}
+          <div className="bg-white p-5 rounded-3xl border border-stone-200/80 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Sisa Menuju Target</span>
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Target className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="text-2xl font-bold text-amber-700">{formatRupiah(shortage)}</div>
+              <p className="text-xs text-stone-500 mt-2">
+                {shortage === 0 ? 'Target tabungan telah tercapai penuh' : `Perlu dikumpulkan berdua untuk mencapai target`}
+              </p>
+            </div>
+          </div>
+
+          {/* Card: Quick Action Setor */}
+          <div className="bg-gradient-to-br from-rose-50 to-stone-50 p-5 rounded-3xl border border-rose-200/60 shadow-xs flex flex-col justify-between">
+            <div>
+              <span className="text-xs font-semibold text-rose-800 uppercase tracking-wider">Aksi Cepat</span>
+              <h4 className="font-serif font-bold text-stone-900 mt-1">Setor Tabungan Hari Ini</h4>
+              <p className="text-xs text-stone-500 mt-1">Catat setoran tabungan bersama agar progres selalu sinkron dan transparan.</p>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                onClick={onQuickAddTabungan}
+                className="flex-1 px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer text-center"
+              >
+                + Setor Tabungan
+              </button>
+              <button
+                onClick={() => onSwitchTab('tabungan')}
+                className="px-3 py-2 bg-white hover:bg-stone-100 text-stone-700 text-xs font-semibold rounded-xl border border-stone-200 transition cursor-pointer"
+              >
+                Riwayat
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Row Kontribusi Berdua & Aktivitas Terakhir */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Kontribusi Tabungan Berdua */}
+          <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="font-serif font-bold text-base text-stone-900">Kontribusi Tabungan Berdua</h4>
+                <p className="text-xs text-stone-500">Transparansi setoran {groomName} & {brideName}</p>
+              </div>
+              <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100">
+                {irfanPercent}% : {kaniaPercent}%
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {/* Groom Bar */}
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200/60">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl">🤵</span>
+                    <div>
+                      <span className="font-semibold text-sm text-stone-800">{groomName}</span>
+                      <span className="text-xs text-stone-400 ml-2">
+                        ({tabungan.filter(t => (t.contributor || '').toLowerCase().includes(groomName.toLowerCase())).length} kali setoran)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-sm text-stone-900">{formatRupiah(irfanSavings)}</div>
+                    <div className="text-xs text-stone-500">{irfanPercent}% dari total</div>
+                  </div>
+                </div>
+                <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-stone-800 h-full rounded-full transition-all duration-500" style={{ width: `${irfanPercent}%` }} />
+                </div>
+              </div>
+
+              {/* Bride Bar */}
+              <div className="p-4 bg-rose-50/50 rounded-2xl border border-rose-200/60">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl">👰</span>
+                    <div>
+                      <span className="font-semibold text-sm text-rose-950">{brideName}</span>
+                      <span className="text-xs text-rose-400 ml-2">
+                        ({tabungan.filter(t => (t.contributor || '').toLowerCase().includes(brideName.toLowerCase())).length} kali setoran)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-bold text-sm text-rose-900">{formatRupiah(kaniaSavings)}</div>
+                    <div className="text-xs text-rose-500">{kaniaPercent}% dari total</div>
+                  </div>
+                </div>
+                <div className="w-full bg-rose-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-rose-500 h-full rounded-full transition-all duration-500" style={{ width: `${kaniaPercent}%` }} />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+              <span>Total Bersama: <strong className="text-stone-800 font-bold">{formatRupiah(totalSavings)}</strong></span>
+              <span>Rasio: <strong className="text-rose-600 font-bold">{irfanPercent}% : {kaniaPercent}%</strong></span>
+            </div>
+          </div>
+
+          {/* Activity Feed */}
+          <div className="bg-white p-6 rounded-3xl border border-stone-200/80 shadow-xs flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-serif font-bold text-base text-stone-900 flex items-center">
+                <Clock className="w-4 h-4 mr-1.5 text-rose-500" /> Aktivitas Terakhir
+              </h4>
+              <span className="text-[11px] text-stone-400">Sinkronisasi Real-time</span>
+            </div>
+
+            <div className="space-y-3 overflow-y-auto max-h-64 pr-1 text-xs flex-1">
+              {activityLogs && activityLogs.length > 0 ? (
+                activityLogs.slice(0, 6).map((log) => (
+                  <div key={log.id} className="p-2.5 rounded-xl bg-stone-50 border border-stone-100 flex items-start space-x-2.5">
+                    <span className="text-sm shrink-0">
+                      {log.user === groomName ? '🤵' : log.user === brideName ? '👰' : '✨'}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-stone-800">{log.user}</span>
+                        <span className="text-[10px] text-stone-400">
+                          {new Date(log.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-stone-600 mt-0.5 truncate">{log.details || log.action}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-stone-400 text-center py-6">Belum ada catatan aktivitas.</p>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </section>
 
     </div>
   );
