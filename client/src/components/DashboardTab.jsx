@@ -9,6 +9,7 @@ import {
   Users,
   Home,
   Clock,
+  ArrowUpRight,
   ShieldCheck,
   ChevronRight,
   Crown
