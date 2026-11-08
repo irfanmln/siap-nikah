@@ -49,7 +49,15 @@ export default function UndanganSouvenirTab({
 
   const handleToggleChecked = async (item) => {
     try {
-      await updateUndangan(item.id, { checked: !item.checked }, activeActor);
+      const nextChecked = !item.checked;
+      await updateUndangan(item.id, {
+        checked: nextChecked,
+        status: nextChecked ? 'Lunas' : 'Pending',
+        name: item.name,
+        targetCost: Number(item.totalPrice ?? item.unitPrice ?? 0),
+        unitPrice: Number(item.unitPrice ?? 0),
+        quantity: Number(item.quantity ?? 1)
+      }, activeActor);
       onRefresh();
     } catch (err) {
       alert('Gagal memperbarui status: ' + err.message);

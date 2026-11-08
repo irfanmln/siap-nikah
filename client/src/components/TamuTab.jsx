@@ -144,9 +144,16 @@ export default function TamuTab({
   };
 
   const handleToggleSent = async (item) => {
-    const nextStatus = item.statusKirim === 'Terkirim' ? 'Belum Dikirim' : 'Terkirim';
+    const isCurrentlySent = item.statusKirim === 'Sudah Dikirim' || item.statusKirim === 'Terkirim';
+    const nextStatus = isCurrentlySent ? 'Belum Dikirim' : 'Sudah Dikirim';
     try {
-      await updateTamu(item.id, { statusKirim: nextStatus }, activeActor);
+      await updateTamu(item.id, {
+        statusKirim: nextStatus,
+        status: isCurrentlySent ? 'Draft' : 'Terkirim',
+        name: item.name,
+        pax: item.pax,
+        relationship: item.relationship
+      }, activeActor);
       onRefresh();
     } catch (err) {
       alert('Gagal update status: ' + err.message);

@@ -447,7 +447,7 @@ export async function onRequest(context) {
       name: i.name,
       estimatedPrice: Number(i.target_cost) || 0,
       priority: 'Tinggi',
-      status: i.paid_amount > 0 ? 'Sudah Ada' : 'Belum Ada',
+      status: i.status === 'Sudah Dibeli' || i.status === 'Kado Tamu' || i.status === 'Sudah Ada' ? i.status : (i.paid_amount > 0 ? 'Sudah Dibeli' : 'Belum Ada'),
       notes: i.notes || ''
     }));
 
@@ -673,6 +673,8 @@ export async function onRequest(context) {
           status = item.status;
         } else if (item.purchased !== undefined) {
           status = item.purchased ? 'Lunas' : 'Pending';
+        } else if (item.checked !== undefined) {
+          status = item.checked ? 'Lunas' : 'Pending';
         }
 
         let vendorName = existing.vendor_name;
@@ -751,6 +753,27 @@ export async function onRequest(context) {
       return json({ success: true, id: newId });
     }
 
+    if (request.method === 'PUT' && tabId) {
+      const item = await request.json();
+      const existing = await db.prepare('SELECT * FROM tabungan WHERE id = ? AND wedding_id = ?').bind(tabId, weddingId).first();
+      if (!existing) {
+        return json({ error: 'Data tabungan tidak ditemukan' }, 404);
+      }
+
+      const date = item.date ?? existing.date;
+      const amount = item.amount !== undefined ? (parseInt(item.amount) || 0) : existing.amount;
+      const contributor = item.contributor ?? existing.contributor;
+      const category = item.category ?? existing.category;
+      const notes = item.notes ?? existing.notes;
+
+      await db.prepare(`
+        UPDATE tabungan
+        SET date = ?, amount = ?, contributor = ?, category = ?, notes = ?
+        WHERE id = ? AND wedding_id = ?
+      `).bind(date, amount, contributor, category, notes, tabId, weddingId).run();
+      return json({ success: true });
+    }
+
     if (request.method === 'DELETE' && tabId) {
       await db.prepare('DELETE FROM tabungan WHERE id = ? AND wedding_id = ?').bind(tabId, weddingId).run();
       return json({ success: true });
@@ -783,12 +806,41 @@ export async function onRequest(context) {
         newId,
         weddingId,
         item.name || 'Nama Tamu',
-        item.category || 'Teman',
+        item.category || item.relationship || 'Teman',
         parseInt(item.pax) || 1,
-        item.phone || '',
+        item.phone || item.notes || '',
         slug
       ).run();
       return json({ success: true, id: newId });
+    }
+
+    if (request.method === 'PUT' && tamuId) {
+      const item = await request.json();
+      const existing = await db.prepare('SELECT * FROM tamu_undangan WHERE id = ? AND wedding_id = ?').bind(tamuId, weddingId).first();
+      if (!existing) {
+        return json({ error: 'Data tamu tidak ditemukan' }, 404);
+      }
+
+      const name = item.name ?? existing.name;
+      const category = item.category ?? item.relationship ?? existing.category;
+      const pax = item.pax !== undefined ? (parseInt(item.pax) || 1) : existing.pax;
+      const phone = item.phone ?? item.notes ?? existing.phone;
+      
+      let status = existing.status;
+      if (item.status !== undefined) {
+        status = item.status;
+      } else if (item.statusKirim !== undefined) {
+        status = item.statusKirim === 'Sudah Dikirim' ? 'Terkirim' : 'Draft';
+      }
+
+      const rsvpStatus = item.rsvpStatus ?? item.rsvp_status ?? (item.konfirmasi !== undefined ? item.konfirmasi : existing.rsvp_status);
+
+      await db.prepare(`
+        UPDATE tamu_undangan
+        SET name = ?, category = ?, pax = ?, phone = ?, status = ?, rsvp_status = ?
+        WHERE id = ? AND wedding_id = ?
+      `).bind(name, category, pax, phone, status, rsvpStatus, tamuId, weddingId).run();
+      return json({ success: true });
     }
 
     if (request.method === 'DELETE' && tamuId) {

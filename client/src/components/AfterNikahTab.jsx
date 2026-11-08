@@ -55,7 +55,12 @@ export default function AfterNikahTab({
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
     }
     try {
-      await updateAfterNikah(item.id, { status: nextStatus }, activeActor);
+      await updateAfterNikah(item.id, {
+        status: nextStatus,
+        name: item.name,
+        targetCost: Number(item.estimatedPrice ?? 0),
+        estimatedPrice: Number(item.estimatedPrice ?? 0)
+      }, activeActor);
       onRefresh();
     } catch (err) {
       alert('Gagal update status: ' + err.message);
