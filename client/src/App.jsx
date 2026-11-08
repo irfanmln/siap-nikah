@@ -7,7 +7,6 @@ import {
   Store,
   Mail,
   Users,
-  Home,
   Heart,
   Crown,
   Menu,
@@ -29,7 +28,6 @@ import UndanganSouvenirTab from './components/UndanganSouvenirTab';
 import TamuTab from './components/TamuTab';
 import SeragamTab from './components/SeragamTab';
 import LegalDocTab from './components/LegalDocTab';
-import AfterNikahTab from './components/AfterNikahTab';
 import LoginView from './components/LoginView';
 import CreateWeddingModal from './components/CreateWeddingModal';
 import InvitePartnerModal from './components/InvitePartnerModal';
@@ -56,8 +54,7 @@ const TABS = [
   { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail },
   { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users },
   { id: 'seragam', label: 'Rekap Seragam & Panitia', icon: Shirt },
-  { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText },
-  { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home }
+  { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText }
 ];
 
 const getTabFromHash = () => {
@@ -490,8 +487,7 @@ export default function App() {
           undangan: db?.undanganSouvenir?.length,
           tamu: db?.tamuUndangan?.length,
           seragam: `${db?.seragam?.filter(s => s.status === 'Sudah Jahit')?.length || 0}/${db?.seragam?.length || 0}`,
-          legal: `${db?.legalDocuments?.filter(d => d.status === 'Lengkap')?.length || 0}/${db?.legalDocuments?.length || 0}`,
-          afternikah: db?.afterNikah?.length
+          legal: `${db?.legalDocuments?.filter(d => d.status === 'Lengkap')?.length || 0}/${db?.legalDocuments?.length || 0}`
         }}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
@@ -734,19 +730,6 @@ export default function App() {
         {activeTab === 'legal' && (
           <LegalDocTab
             legalDocuments={db?.legalDocuments}
-            activeActor={effectiveActor}
-            onRefresh={loadData}
-            isPremium={isPremium}
-            onRequireVip={(msg) => {
-              setVipFeaturePrompt(msg);
-              setIsVipModalOpen(true);
-            }}
-          />
-        )}
-
-        {activeTab === 'afternikah' && (
-          <AfterNikahTab
-            afterNikah={db?.afterNikah}
             activeActor={effectiveActor}
             onRefresh={loadData}
             isPremium={isPremium}

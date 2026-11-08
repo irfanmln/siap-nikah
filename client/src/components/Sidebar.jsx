@@ -7,7 +7,6 @@ import {
   Store,
   Mail,
   Users,
-  Home,
   Heart,
   Calendar,
   Sparkles,
@@ -60,8 +59,7 @@ const NAV_SECTIONS = [
     items: [
       { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users, badgeKey: 'tamu' },
       { id: 'seragam', label: 'Rekap Seragam & Panitia', icon: Shirt, badgeKey: 'seragam' },
-      { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText, badgeKey: 'legal' },
-      { id: 'afternikah', label: 'After Nikah (Wishlist)', icon: Home, badgeKey: 'afternikah' }
+      { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText, badgeKey: 'legal' }
     ]
   }
 ];

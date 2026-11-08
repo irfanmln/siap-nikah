@@ -33,11 +33,7 @@ const DEFAULT_BUDGET_TEMPLATES = [
   
   // Undangan & Souvenir
   { module: 'undanganSouvenir', category: 'Souvenir', name: 'Souvenir Tamu (300 pcs)', target_cost: 2500000 },
-  { module: 'undanganSouvenir', category: 'Cetak', name: 'Buku Tamu & Cetak Fisik', target_cost: 500000 },
-  
-  // Pasca Nikah
-  { module: 'afterNikah', category: 'Honeymoon', name: 'Tiket & Akomodasi Bulan Madu', target_cost: 7000000 },
-  { module: 'afterNikah', category: 'Darurat', name: 'Dana Darurat Rumah Tangga Awal', target_cost: 5000000 }
+  { module: 'undanganSouvenir', category: 'Cetak', name: 'Buku Tamu & Cetak Fisik', target_cost: 500000 }
 ];
 
 // Template Checklist Timeline Berdasarkan Waktu
@@ -579,7 +575,7 @@ export async function onRequest(context) {
   }
 
   // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, dll)
-  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir', 'afterNikah'];
+  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir'];
   for (const mod of budgetModules) {
     if (path.startsWith(mod)) {
       const parts = path.split('/');
@@ -594,8 +590,7 @@ export async function onRequest(context) {
             wedding: 7,
             seserahan: 5,
             mahar: 3,
-            undanganSouvenir: 3,
-            afterNikah: 5
+            undanganSouvenir: 3
           };
           const maxAllowed = limits[mod] || 5;
           if ((countRes?.count || 0) >= maxAllowed) {

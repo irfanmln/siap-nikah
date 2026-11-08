@@ -22,7 +22,7 @@ export default function DashboardTab({
   onOpenInvite,
   onOpenUpgradeVip
 }) {
-  const { metadata, tabungan = [], seserahan = [], mahar = [], wedding = [], undanganSouvenir = [], tamuUndangan = [], afterNikah = [], activityLogs = [] } = db || {};
+  const { metadata, tabungan = [], seserahan = [], mahar = [], wedding = [], undanganSouvenir = [], tamuUndangan = [], activityLogs = [] } = db || {};
 
   const isPremium = Boolean(metadata?.isPremium);
 
@@ -54,7 +54,6 @@ export default function DashboardTab({
   const dpWeddingVendors = wedding.reduce((sum, w) => sum + (Number(w.dpPaid) || 0), 0);
 
   const totalUndangan = undanganSouvenir.reduce((sum, u) => sum + (Number(u.totalPrice) || 0), 0);
-  const totalAfterNikah = afterNikah.reduce((sum, a) => sum + (Number(a.estimatedPrice) || 0), 0);
 
   const grandTotalBudget = totalWeddingVendors + totalMahar + totalSeserahan + totalUndangan;
 
@@ -63,7 +62,6 @@ export default function DashboardTab({
   const vendorDealCount = wedding.filter(w => w.status === 'DP' || w.status === 'Lunas' || w.checked).length;
   const tamuCount = tamuUndangan.length;
   const totalPax = tamuUndangan.reduce((sum, t) => sum + (Number(t.pax) || 2), 0);
-  const afterNikahCount = afterNikah.filter(a => a.status === 'Sudah Dibeli' || a.status === 'Kado Tamu').length;
 
   const daysRemaining = getDaysUntil(metadata?.weddingDate);
 
@@ -380,29 +378,6 @@ export default function DashboardTab({
                 <div className="text-right">
                   <div className="text-sm font-bold text-stone-900">{formatRupiah(totalUndangan)}</div>
                   <div className="text-xs text-stone-400">{undanganSouvenir.length} item</div>
-                </div>
-              </div>
-
-              {/* Wishlist After Nikah (Opsional) */}
-              <div
-                onClick={() => onSwitchTab('afternikah')}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-stone-50/70 hover:bg-stone-100/80 transition cursor-pointer border border-stone-200/60 group"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs border border-teal-200/60">
-                    🏡
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-stone-800 group-hover:text-rose-600 transition flex items-center gap-1">
-                      <span>Wishlist Kebutuhan Rumah (After Nikah)</span>
-                      <ArrowUpRight className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition" />
-                    </div>
-                    <div className="text-xs text-stone-400">{afterNikahCount} dari {afterNikah.length} kebutuhan siap / kado</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-stone-900">{formatRupiah(totalAfterNikah)}</div>
-                  <div className="text-xs text-stone-400">{afterNikah.length} item</div>
                 </div>
               </div>
 
