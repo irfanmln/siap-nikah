@@ -53,7 +53,6 @@ wedding-saas/
 │   │   │   ├── TamuTab.jsx     # Buku tamu undangan, pax, dan RSVP
 │   │   │   ├── SeragamTab.jsx  # Rekap seragam keluarga & bridesmaid (kain + jahit)
 │   │   │   ├── LegalDocTab.jsx # Checklist berkas KUA / Catatan Sipil
-│   │   │   ├── AfterNikahTab.jsx # Wishlist perlengkapan rumah pasca nikah
 │   │   │   ├── AdminPanel.jsx  # Dashboard super admin
 │   │   │   ├── LoginView.jsx   # Form login Google & Email
 │   │   │   ├── CreateWeddingModal.jsx # Pembuatan rencana pernikahan baru

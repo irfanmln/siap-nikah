@@ -274,15 +274,6 @@ export async function deleteTamu(id, actor) {
   return res.json();
 }
 
-export async function updateAfterNikah(id, item, actor) {
-  const res = await fetch(`${API_BASE}/after-nikah/${id}`, {
-    method: 'PUT',
-    headers: getHeaders(actor),
-    body: JSON.stringify(item)
-  });
-  return res.json();
-}
-
 export async function deleteAfterNikah(id, actor) {
   const res = await fetch(`${API_BASE}/after-nikah/${id}`, {
     method: 'DELETE',
