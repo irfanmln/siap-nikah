@@ -607,6 +607,18 @@ export async function onRequest(context) {
 
         const item = await request.json();
         const newId = 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+        const incomingTargetCost = item.targetCost ?? item.target_cost ?? item.price ?? item.estimatedCost ?? item.estimatedPrice ?? item.totalPrice ?? item.unitPrice ?? 0;
+        const targetCost = parseInt(incomingTargetCost) || 0;
+        const actualCost = parseInt(item.actualCost ?? item.actual_cost) || 0;
+        const paidAmount = parseInt(item.paidAmount ?? item.paid_amount ?? item.dpPaid) || 0;
+
+        let status = item.status || 'Pending';
+        if (item.purchased !== undefined) {
+          status = item.purchased ? 'Lunas' : 'Pending';
+        }
+        const vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? '';
+        const vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? '';
+
         await db.prepare(`
           INSERT INTO budget_items (id, wedding_id, module, category, name, target_cost, actual_cost, paid_amount, status, vendor_name, vendor_contact, notes)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -616,12 +628,12 @@ export async function onRequest(context) {
           mod,
           item.category || '',
           item.name || 'Pos Anggaran',
-          parseInt(item.targetCost || item.target_cost) || 0,
-          parseInt(item.actualCost || item.actual_cost) || 0,
-          parseInt(item.paidAmount || item.paid_amount) || 0,
-          item.status || 'Pending',
-          item.vendorName || item.vendor_name || '',
-          item.vendorContact || item.vendor_contact || '',
+          targetCost,
+          actualCost,
+          paidAmount,
+          status,
+          vendorName,
+          vendorContact,
           item.notes || ''
         ).run();
         return json({ success: true, id: newId });
@@ -630,20 +642,68 @@ export async function onRequest(context) {
       // UPDATE
       if (request.method === 'PUT' && itemId) {
         const item = await request.json();
+        const existing = await db.prepare('SELECT * FROM budget_items WHERE id = ? AND wedding_id = ?').bind(itemId, weddingId).first();
+        if (!existing) {
+          return json({ error: 'Item tidak ditemukan' }, 404);
+        }
+
+        const category = item.category !== undefined ? item.category : existing.category;
+        const name = item.name !== undefined ? item.name : existing.name;
+
+        let targetCost = existing.target_cost;
+        const incomingTargetCost = item.targetCost ?? item.target_cost ?? item.price ?? item.estimatedCost ?? item.estimatedPrice ?? item.totalPrice ?? item.unitPrice;
+        if (incomingTargetCost !== undefined) {
+          targetCost = parseInt(incomingTargetCost) || 0;
+        }
+
+        let actualCost = existing.actual_cost;
+        const incomingActualCost = item.actualCost ?? item.actual_cost;
+        if (incomingActualCost !== undefined) {
+          actualCost = parseInt(incomingActualCost) || 0;
+        }
+
+        let paidAmount = existing.paid_amount;
+        const incomingPaidAmount = item.paidAmount ?? item.paid_amount ?? item.dpPaid;
+        if (incomingPaidAmount !== undefined) {
+          paidAmount = parseInt(incomingPaidAmount) || 0;
+        }
+
+        let status = existing.status;
+        if (item.status !== undefined) {
+          status = item.status;
+        } else if (item.purchased !== undefined) {
+          status = item.purchased ? 'Lunas' : 'Pending';
+        }
+
+        let vendorName = existing.vendor_name;
+        if (item.vendorName !== undefined || item.vendor_name !== undefined || item.purchasedBy !== undefined) {
+          vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? '';
+        }
+
+        let vendorContact = existing.vendor_contact;
+        if (item.vendorContact !== undefined || item.vendor_contact !== undefined || item.link !== undefined) {
+          vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? '';
+        }
+
+        let notes = existing.notes;
+        if (item.notes !== undefined) {
+          notes = item.notes;
+        }
+
         await db.prepare(`
           UPDATE budget_items 
           SET category = ?, name = ?, target_cost = ?, actual_cost = ?, paid_amount = ?, status = ?, vendor_name = ?, vendor_contact = ?, notes = ?
           WHERE id = ? AND wedding_id = ?
         `).bind(
-          item.category || '',
-          item.name,
-          parseInt(item.targetCost ?? item.target_cost) || 0,
-          parseInt(item.actualCost ?? item.actual_cost) || 0,
-          parseInt(item.paidAmount ?? item.paid_amount) || 0,
-          item.status || 'Pending',
-          item.vendorName || item.vendor_name || '',
-          item.vendorContact || item.vendor_contact || '',
-          item.notes || '',
+          category,
+          name,
+          targetCost,
+          actualCost,
+          paidAmount,
+          status,
+          vendorName,
+          vendorContact,
+          notes,
           itemId,
           weddingId
         ).run();

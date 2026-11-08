@@ -80,10 +80,15 @@ export default function MaharTab({
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        targetCost: Number(formData.price) || 0,
+        price: Number(formData.price) || 0
+      };
       if (editingItem) {
-        await updateMahar(editingItem.id, formData, activeActor);
+        await updateMahar(editingItem.id, payload, activeActor);
       } else {
-        await addMahar(formData, activeActor);
+        await addMahar(payload, activeActor);
       }
       setIsModalOpen(false);
       onRefresh();

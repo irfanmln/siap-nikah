@@ -96,10 +96,14 @@ export default function AfterNikahTab({
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        targetCost: Number(formData.estimatedPrice) || 0
+      };
       if (editingItem) {
-        await updateAfterNikah(editingItem.id, formData, activeActor);
+        await updateAfterNikah(editingItem.id, payload, activeActor);
       } else {
-        await addAfterNikah(formData, activeActor);
+        await addAfterNikah(payload, activeActor);
       }
       setIsModalOpen(false);
       onRefresh();

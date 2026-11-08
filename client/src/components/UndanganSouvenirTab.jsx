@@ -102,7 +102,8 @@ export default function UndanganSouvenirTab({
         ...formData,
         quantity: q,
         unitPrice: u,
-        totalPrice: q * u
+        totalPrice: q * u,
+        targetCost: q * u
       };
       if (editingItem) {
         await updateUndangan(editingItem.id, payload, activeActor);

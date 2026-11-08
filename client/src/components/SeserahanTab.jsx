@@ -98,8 +98,12 @@ export default function SeserahanTab({
     }
     try {
       await updateSeserahan(item.id, {
+        ...item,
         purchased: nextPurchased,
-        purchasedBy: nextPurchased ? activeActor : null
+        purchasedBy: nextPurchased ? activeActor : null,
+        targetCost: Number(item.price) || 0,
+        price: Number(item.price) || 0,
+        status: nextPurchased ? 'Lunas' : 'Pending'
       }, activeActor);
       onRefresh();
     } catch (err) {
@@ -146,10 +150,17 @@ export default function SeserahanTab({
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        targetCost: Number(formData.price) || 0,
+        price: Number(formData.price) || 0,
+        vendorContact: formData.link || '',
+        status: formData.purchased ? 'Lunas' : 'Pending'
+      };
       if (editingItem) {
-        await updateSeserahan(editingItem.id, formData, activeActor);
+        await updateSeserahan(editingItem.id, payload, activeActor);
       } else {
-        await addSeserahan(formData, activeActor);
+        await addSeserahan(payload, activeActor);
       }
       setIsModalOpen(false);
       onRefresh();

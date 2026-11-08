@@ -78,10 +78,15 @@ export default function WeddingTab({
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        targetCost: Number(formData.estimatedCost) || 0,
+        paidAmount: Number(formData.dpPaid) || 0
+      };
       if (editingItem) {
-        await updateWedding(editingItem.id, formData, activeActor);
+        await updateWedding(editingItem.id, payload, activeActor);
       } else {
-        await addWedding(formData, activeActor);
+        await addWedding(payload, activeActor);
       }
       setIsModalOpen(false);
       onRefresh();
