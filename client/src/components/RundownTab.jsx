@@ -7,11 +7,7 @@ import {
   MapPin,
   User,
   Copy,
-  Check,
-  Sparkles,
-  Calendar,
-  Share2,
-  FileText
+  Check
 } from 'lucide-react';
 import { addRundownItem, updateRundownItem, deleteRundownItem } from '../utils/api';
 

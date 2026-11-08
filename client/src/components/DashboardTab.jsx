@@ -9,8 +9,6 @@ import {
   Users,
   Home,
   Clock,
-  Sparkles,
-  ArrowUpRight,
   ShieldCheck,
   ChevronRight,
   Crown
@@ -74,15 +72,10 @@ export default function DashboardTab({
     <div className="space-y-6">
       
       {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-900 via-stone-900 to-amber-950 text-white p-6 sm:p-8 shadow-xl">
-        {/* Decorative elements */}
-        <div className="absolute -right-10 -bottom-10 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -left-10 -top-10 w-72 h-72 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-stone-900 via-stone-850 to-rose-950 text-white p-6 sm:p-8 shadow-xl">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-rose-200 text-xs font-medium border border-white/10">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-stone-200 text-xs font-medium border border-white/10">
               <span>Bismillah Menuju Akad & Resepsi</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white tracking-tight">
@@ -99,7 +92,7 @@ export default function DashboardTab({
               <div className="text-3xl sm:text-4xl font-serif font-bold text-amber-300">
                 {daysRemaining > 0 ? daysRemaining : 0}
               </div>
-              <div className="text-xs text-rose-100 font-medium uppercase tracking-wider mt-0.5">
+              <div className="text-xs text-stone-200 font-medium uppercase tracking-wider mt-0.5">
                 Hari Menuju Hari H 💍
               </div>
             </div>

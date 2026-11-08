@@ -6,14 +6,10 @@ import {
   Plus,
   Trash2,
   Clock,
-  Sparkles,
   User,
-  Users,
-  Heart,
   ChevronRight,
   Filter,
-  Check,
-  AlertCircle
+  Check
 } from 'lucide-react';
 import { addTimelineItem, updateTimelineItem, deleteTimelineItem } from '../utils/api';
 

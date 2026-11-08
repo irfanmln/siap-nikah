@@ -9,8 +9,6 @@ import {
   Users,
   Home,
   Heart,
-  RefreshCw,
-  Sparkles,
   Crown,
   Menu,
   CalendarCheck,
@@ -339,10 +337,9 @@ export default function App() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf8f5] text-stone-700">
         <div className="relative mb-4">
           <Heart className="w-12 h-12 text-rose-500 fill-rose-500 animate-pulse" />
-          <Sparkles className="w-6 h-6 text-amber-400 absolute -top-1 -right-1 animate-spin" />
         </div>
         <h2 className="text-xl font-serif font-bold text-stone-900 tracking-tight">Siap Nikah</h2>
-        <p className="text-xs text-stone-400 mt-1">Memeriksa sesi login...</p>
+        <p className="text-xs text-stone-500 mt-1">Memeriksa sesi login...</p>
       </div>
     );
   }
@@ -389,10 +386,9 @@ export default function App() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf8f5] text-stone-700">
         <div className="relative mb-4">
           <Heart className="w-12 h-12 text-rose-500 fill-rose-500 animate-pulse" />
-          <Sparkles className="w-6 h-6 text-amber-400 absolute -top-1 -right-1 animate-spin" />
         </div>
         <h2 className="text-xl font-serif font-bold text-stone-900 tracking-tight">Memuat Wedding Plan...</h2>
-        <p className="text-xs text-stone-400 mt-1">Menyiapkan rencana pernikahan impian Anda 💕</p>
+        <p className="text-xs text-stone-500 mt-1">Menyiapkan rencana pernikahan impian Anda 💕</p>
       </div>
     );
   }
@@ -725,7 +721,7 @@ export default function App() {
             <span>• Platform Perencanaan Anggaran & Persiapan Pernikahan Impian</span>
           </div>
           <div>
-            &copy; {new Date().getFullYear()} Siap Nikah. Semua hak dilindungi.
+            &copy; 2026 Siap Nikah. Semua hak dilindungi.
           </div>
         </div>
       </footer>

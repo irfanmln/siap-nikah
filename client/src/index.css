@@ -18,6 +18,28 @@
   * {
     box-sizing: border-box;
   }
+
+  /* Interaction affordances & cursor standard (R-39) */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  select,
+  label[for] {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Prevent unintended auto-zoom on iOS while maintaining accessibility (R-03 / R-39) */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input, select, textarea {
+      font-size: 0.875rem;
+    }
+  }
 }
 
 /* Custom scrollbars */

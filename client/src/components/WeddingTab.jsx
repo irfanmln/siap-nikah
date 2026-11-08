@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import {
-  Sparkles,
   Plus,
   Trash2,
   Edit2,
-  X,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Phone,
-  FileText
+  X
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
 import { addWedding, updateWedding, deleteWedding } from '../utils/api';
@@ -275,7 +269,9 @@ export default function WeddingTab({
                 {editingItem ? 'Edit Vendor / Acara' : 'Tambah Vendor / Acara'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
+                aria-label="Tutup dialog"
                 className="p-1 text-stone-400 hover:text-stone-700 rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />

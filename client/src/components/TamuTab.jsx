@@ -222,7 +222,7 @@ export default function TamuTab({
           <select
             value={filterRel}
             onChange={e => setFilterRel(e.target.value)}
-            className="px-3.5 py-1.5 bg-stone-100 border border-stone-200 rounded-2xl text-xs font-medium text-stone-700 focus:outline-none"
+            className="px-3.5 py-1.5 bg-stone-100 border border-stone-200 rounded-2xl text-xs font-medium text-stone-700 focus:outline-none focus:ring-2 focus:ring-rose-400"
           >
             <option value="Semua">Semua Hubungan</option>
             {RELATIONSHIPS.map(r => (
@@ -385,7 +385,9 @@ export default function TamuTab({
                 {editingItem ? 'Edit Tamu Undangan' : 'Tambah Tamu Undangan'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
+                aria-label="Tutup dialog"
                 className="p-1 text-stone-400 hover:text-stone-700 rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />

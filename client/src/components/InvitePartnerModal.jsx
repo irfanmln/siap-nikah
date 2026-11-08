@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
-import { X, Copy, Check, MessageCircle, Heart, Share2, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Copy, Check, MessageCircle, Heart, Share2 } from 'lucide-react';
 
 export default function InvitePartnerModal({ isOpen, onClose, weddingId, metadata }) {
+  const [copied, setCopied] = useState(false);
+
+  // Keyboard accessibility: Escape to close modal (R-32)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
-  const [copied, setCopied] = useState(false);
   const groom = metadata?.groom || 'Pria';
   const bride = metadata?.bride || 'Wanita';
 
@@ -27,11 +40,13 @@ export default function InvitePartnerModal({ isOpen, onClose, weddingId, metadat
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 bg-gradient-to-r from-rose-50 to-amber-50">
           <div className="flex items-center space-x-2">
-            <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
+            <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
             <h2 className="text-base font-serif font-bold text-stone-900">Undang Pasangan</h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Tutup dialog"
             className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-white rounded-full transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -47,16 +62,17 @@ export default function InvitePartnerModal({ isOpen, onClose, weddingId, metadat
           <h3 className="text-lg font-serif font-bold text-stone-900 mb-1">
             Kelola Pernikahan Berdua
           </h3>
-          <p className="text-xs text-stone-500 mb-6 leading-relaxed">
-            Kirimkan link ini ke calon suami atau calon istri Anda. Begitu pasangan login menggunakan akun Google-nya, data pernikahan <strong className="text-stone-800">{groom} & {bride}</strong> akan otomatis tersinkronisasi di kedua HP!
+          <p className="text-xs text-stone-600 mb-6 leading-relaxed">
+            Kirimkan tautan ini ke calon suami atau calon istri Anda. Begitu pasangan masuk menggunakan akun Google-nya, data pernikahan <strong className="text-stone-800">{groom} & {bride}</strong> akan otomatis tersinkronisasi di kedua perangkat.
           </p>
 
           {/* Link Box */}
           <div className="bg-stone-50 border border-stone-200/80 rounded-2xl p-2.5 flex items-center justify-between gap-2 mb-4">
-            <span className="text-xs text-stone-600 truncate font-mono select-all pl-1">
+            <span className="text-xs text-stone-700 truncate select-all pl-1 font-medium">
               {inviteUrl}
             </span>
             <button
+              type="button"
               onClick={handleCopy}
               className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                 copied
@@ -91,16 +107,16 @@ export default function InvitePartnerModal({ isOpen, onClose, weddingId, metadat
             </a>
 
             <button
+              type="button"
               onClick={onClose}
-              className="w-full py-2.5 text-stone-500 hover:text-stone-800 text-xs font-medium transition cursor-pointer"
+              className="w-full py-2.5 text-stone-600 hover:text-stone-900 text-xs font-medium transition cursor-pointer"
             >
               Tutup
             </button>
           </div>
 
-          <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-center gap-1.5 text-[11px] text-stone-400">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Gratis & kolaborasi tanpa batas perangkat</span>
+          <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-center gap-1.5 text-xs text-stone-500">
+            <span>Kolaborasi otomatis tanpa batas perangkat</span>
           </div>
 
         </div>

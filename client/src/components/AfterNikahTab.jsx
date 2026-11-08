@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Home,
   Plus,
   Trash2,
   Edit2,
   X,
   CheckCircle,
-  Circle,
-  Gift,
-  Sparkles,
-  ShoppingBag
+  Circle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatRupiah } from '../utils/formatters';
@@ -132,7 +128,7 @@ export default function AfterNikahTab({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">After Nikah — Rumah Tangga Baru</h2>
+            <h2 className="text-2xl font-serif font-bold text-stone-900">After Nikah: Rumah Tangga Baru</h2>
             {!isPremium ? (
               <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-200">
                 Kuota Gratis: {afterNikah.length}/5 Barang
@@ -326,7 +322,9 @@ export default function AfterNikahTab({
                 {editingItem ? 'Edit Barang Rumah Tangga' : 'Tambah Wishlist Perabot'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
+                aria-label="Tutup dialog"
                 className="p-1 text-stone-400 hover:text-stone-700 rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />

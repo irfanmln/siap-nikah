@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Heart, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Heart, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 export default function LoginView({ onLoginSuccess, isLoading, error }) {
   const googleBtnRef = useRef(null);
@@ -36,15 +36,13 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
   }, [onLoginSuccess]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#fdfbf9] via-[#faf6f0] to-[#f4ece1] flex flex-col justify-between items-center p-4 sm:p-8">
+    <div className="min-h-screen bg-[#faf8f5] flex flex-col justify-between items-center p-4 sm:p-8">
       
       {/* Header Brand */}
       <header className="w-full max-w-5xl flex items-center justify-between py-4">
         <div className="flex items-center gap-2">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-400 p-0.5 shadow-xs flex items-center justify-center">
-            <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-              <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
-            </div>
+          <div className="w-10 h-10 rounded-2xl bg-rose-100 p-0.5 shadow-xs flex items-center justify-center">
+            <Heart className="w-5 h-5 text-rose-600 fill-rose-600" />
           </div>
           <div>
             <span className="font-serif font-bold text-2xl tracking-tight text-[#2c2420]">
@@ -56,10 +54,10 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
 
       {/* Main Content Card */}
       <main className="w-full max-w-md my-auto py-8">
-        <div className="bg-white/90 backdrop-blur-md border border-stone-200/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-stone-200/50 text-center">
+        <div className="bg-white border border-stone-200/80 rounded-3xl p-6 sm:p-8 shadow-xl text-center">
           
-          <div className="inline-flex p-3 rounded-2xl bg-amber-50 text-amber-700 mb-4 border border-amber-200/60 shadow-xs">
-            <Sparkles className="w-6 h-6 animate-pulse" />
+          <div className="inline-flex p-3 rounded-2xl bg-rose-50 text-rose-700 mb-4 border border-rose-200/60 shadow-xs">
+            <Heart className="w-6 h-6 fill-rose-500 text-rose-500" />
           </div>
 
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#2c2420] mb-2 leading-tight">
@@ -74,7 +72,7 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
             <div ref={googleBtnRef} className="flex justify-center"></div>
             
             {isLoading && (
-              <p className="text-xs text-stone-500 mt-3 animate-pulse">Menghubungkan akun Google...</p>
+              <p className="text-xs text-stone-600 mt-3 animate-pulse">Menghubungkan akun Google...</p>
             )}
             
             {error && (
@@ -84,8 +82,8 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
             )}
           </div>
 
-          <p className="text-[11px] text-stone-400 mt-3 mb-6">
-            1-Klik masuk langsung tanpa perlu repot menghafal kata sandi
+          <p className="text-xs text-stone-500 mt-3 mb-6">
+            Masuk dengan aman dan instan menggunakan akun Google
           </p>
 
           {/* Value Props Bullet */}
@@ -106,15 +104,15 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
 
         </div>
 
-        <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-stone-500">
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-stone-600">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span>Autentikasi resmi & aman via Google Identity Services</span>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="text-center text-xs text-stone-400 py-3">
-        &copy; {new Date().getFullYear()} Siap Nikah. Semua hak dilindungi.
+      <footer className="text-center text-xs text-stone-500 py-3">
+        &copy; 2026 Siap Nikah. Semua hak dilindungi.
       </footer>
 
     </div>

@@ -5,10 +5,7 @@ import {
   Trash2,
   Edit2,
   X,
-  Sparkles,
   Calculator,
-  ShieldCheck,
-  CheckCircle,
   Gem
 } from 'lucide-react';
 import { formatRupiah } from '../utils/formatters';
@@ -273,7 +270,9 @@ export default function MaharTab({
                 {editingItem ? 'Edit Item Mahar' : 'Tambah Item Mahar'}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
+                aria-label="Tutup dialog"
                 className="p-1 text-stone-400 hover:text-stone-700 rounded-full cursor-pointer"
               >
                 <X className="w-5 h-5" />

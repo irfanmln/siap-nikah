@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { X, Save, Calendar, Target, Coins, Heart, Info, Smartphone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Save, Calendar, Target, Coins, Heart, Smartphone } from 'lucide-react';
 import { updateMetadata } from '../utils/api';
 
 export default function SettingsModal({ metadata, isOpen, onClose, onUpdated, activeActor }) {
-  if (!isOpen) return null;
-
   const [formData, setFormData] = useState({
     groom: metadata?.groom || '',
     bride: metadata?.bride || '',
@@ -15,6 +13,34 @@ export default function SettingsModal({ metadata, isOpen, onClose, onUpdated, ac
   });
 
   const [saving, setSaving] = useState(false);
+
+  // Sync form state when modal opens or metadata updates (Rules of Hooks & resilience)
+  useEffect(() => {
+    if (isOpen && metadata) {
+      setFormData({
+        groom: metadata?.groom || '',
+        bride: metadata?.bride || '',
+        weddingDate: metadata?.weddingDate || '',
+        targetSavings: metadata?.targetSavings || 50000000,
+        goldPricePerGram: metadata?.goldPricePerGram || 2700000,
+        silverPrice: metadata?.silverPrice || 800000
+      });
+    }
+  }, [isOpen, metadata]);
+
+  // Keyboard accessibility: Escape to close modal (R-32)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +74,9 @@ export default function SettingsModal({ metadata, isOpen, onClose, onUpdated, ac
             <h2 className="text-lg font-serif font-bold text-stone-900">Pengaturan Wedding Plan</h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Tutup dialog"
             className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-full transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -109,7 +137,7 @@ export default function SettingsModal({ metadata, isOpen, onClose, onUpdated, ac
               onChange={e => setFormData({ ...formData, targetSavings: e.target.value })}
               className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 font-semibold"
             />
-            <p className="text-[11px] text-stone-400 mt-1">Default target dari spreadsheet: Rp 100.000.000</p>
+            <p className="text-[11px] text-stone-500 mt-1">Default target dari spreadsheet: Rp 100.000.000</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
