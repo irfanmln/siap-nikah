@@ -6,7 +6,7 @@ export default function LoginView({ onLoginSuccess, isLoading, error }) {
 
   // Initialize Google Sign-In button
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '477773891287-2o9sf30sf4kuvsboud6r9oouotvumcak.apps.googleusercontent.com';
 
     const interval = setInterval(() => {
       if (window.google?.accounts?.id && googleBtnRef.current) {
