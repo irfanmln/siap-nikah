@@ -117,19 +117,19 @@ export default function WeddingTab({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-serif font-bold text-stone-900">Vendor Resepsi & Kebutuhan Acara</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900">Vendor Resepsi & Kebutuhan Acara</h2>
             {!isPremium ? (
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-200">
+              <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold border border-amber-200 whitespace-nowrap shrink-0">
                 Kuota Gratis: {wedding.length}/7 Pos
               </span>
             ) : (
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200">
+              <span className="inline-flex items-center text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 whitespace-nowrap shrink-0">
                 VIP: Unlimited Pos ✨
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-stone-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-stone-500 mt-1">
             Daftar paket rias & dekorasi, WO, fotografer, katering, tenda, hiburan, dan legalitas KUA
           </p>
         </div>

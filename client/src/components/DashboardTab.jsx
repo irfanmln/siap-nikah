@@ -96,16 +96,16 @@ export default function DashboardTab({
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
               <button
                 onClick={onOpenInvite}
-                className="flex-1 md:flex-initial text-center px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
+                className="h-10 px-4 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
               >
                 {!isPremium ? (
                   <>
-                    <Crown className="w-3.5 h-3.5 fill-white text-white" />
+                    <Crown className="w-3.5 h-3.5 fill-white text-white shrink-0" />
                     <span>Undang Pasangan</span>
-                    <span className="text-[9px] bg-white/25 px-1.5 py-0.2 rounded-full font-bold">VIP</span>
+                    <span className="text-[9px] bg-white/25 px-1.5 py-0.5 rounded-full font-bold ml-0.5">VIP</span>
                   </>
                 ) : (
                   <>
@@ -114,18 +114,21 @@ export default function DashboardTab({
                   </>
                 )}
               </button>
-              <button
-                onClick={onQuickAddTabungan}
-                className="flex-1 md:flex-initial text-center px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold rounded-xl shadow-md transition cursor-pointer"
-              >
-                + Setor Tabungan
-              </button>
-              <button
-                onClick={onQuickAddSeserahan}
-                className="flex-1 md:flex-initial text-center px-4 py-2 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold rounded-xl backdrop-blur-md transition cursor-pointer"
-              >
-                + Seserahan
-              </button>
+
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+                <button
+                  onClick={onQuickAddTabungan}
+                  className="h-10 px-4 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold rounded-xl shadow-md transition cursor-pointer flex items-center justify-center whitespace-nowrap"
+                >
+                  + Setor Tabungan
+                </button>
+                <button
+                  onClick={onQuickAddSeserahan}
+                  className="h-10 px-4 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold rounded-xl backdrop-blur-md transition cursor-pointer flex items-center justify-center whitespace-nowrap"
+                >
+                  + Seserahan
+                </button>
+              </div>
             </div>
           </div>
         </div>
