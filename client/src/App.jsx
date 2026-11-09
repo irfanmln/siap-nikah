@@ -33,6 +33,7 @@ import CreateWeddingModal from './components/CreateWeddingModal';
 import InvitePartnerModal from './components/InvitePartnerModal';
 import UpgradeVipModal from './components/UpgradeVipModal';
 import AdminPanel from './components/AdminPanel';
+import InstallPromptBanner from './components/InstallPromptBanner';
 import { useModalBack } from './utils/useModalBack';
 import {
   fetchDb,
@@ -790,6 +791,9 @@ export default function App() {
         onToggleVipTest={handleToggleVipTest}
         featureMessage={vipFeaturePrompt}
       />
+
+      {/* PWA Install Banner (Only after login, auto-hidden if standalone or installed) */}
+      <InstallPromptBanner user={user} />
 
     </div>
   );
