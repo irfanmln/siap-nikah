@@ -18,6 +18,7 @@ import {
 import { formatRupiah, formatDate } from '../utils/formatters';
 import { addTabungan, updateTabungan, deleteTabungan } from '../utils/api';
 import { useModalBack } from '../utils/useModalBack';
+import TabunganDonutCard from './TabunganDonutCard';
 
 export default function TabunganTab({
   tabungan = [],
@@ -218,6 +219,14 @@ export default function TabunganTab({
         </div>
 
       </div>
+
+      {/* Interactive Donut Category Breakdown (myBCA Style) */}
+      <TabunganDonutCard
+        tabungan={tabungan}
+        totalSavings={totalSavings}
+        activeFilter={filterKategori}
+        onSelectCategory={(cat) => setFilterKategori(cat)}
+      />
 
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-3xl border border-stone-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
