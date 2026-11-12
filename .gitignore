@@ -4,4 +4,7 @@ client/node_modules/
 dist/
 public/assets/
 .env*
+*.xlsx
+*.xls
+*.csv
 .DS_Store
