@@ -400,15 +400,20 @@ export async function onRequest(context) {
       notes: i.notes || ''
     }));
 
-    const mahar = allBudgets.filter(i => i.module === 'mahar').map(i => ({
-      id: i.id,
-      category: i.category || 'Logam Mulia',
-      name: i.name,
-      price: Number(i.target_cost) || 0,
-      detail: i.notes || '',
-      status: i.status || 'Rencana',
-      notes: i.notes || ''
-    }));
+    const mahar = allBudgets.filter(i => i.module === 'mahar').map(i => {
+      const weightMatch = (i.name || '').match(/\(([^)]*gr[^)]*)\)/i);
+      const weight = i.vendor_name || (weightMatch ? weightMatch[1].trim() : '');
+      return {
+        id: i.id,
+        category: i.category || 'Logam Mulia',
+        name: i.name,
+        price: Number(i.target_cost) || 0,
+        weight: weight,
+        detail: i.vendor_contact || i.notes || '',
+        status: i.status || 'Rencana',
+        notes: i.notes || ''
+      };
+    });
 
     const weddingVendor = allBudgets.filter(i => i.module === 'wedding').map(i => ({
       id: i.id,
@@ -416,7 +421,7 @@ export async function onRequest(context) {
       name: i.name,
       estimatedCost: Number(i.target_cost) || 0,
       dpPaid: Number(i.paid_amount) || 0,
-      detail: i.notes || '',
+      detail: i.vendor_contact || i.notes || '',
       status: i.status || 'Pending',
       notes: i.notes || ''
     }));
@@ -455,16 +460,38 @@ export async function onRequest(context) {
       notes: i.notes || ''
     }));
 
-    const tamuList = (tamu.results || []).map(t => ({
-      id: t.id,
-      name: t.name,
-      relationship: t.category || `Keluarga ${wedding.groom_name}`,
-      category: 'Reguler',
-      pax: t.pax || 1,
-      statusKirim: t.status === 'Terkirim' ? 'Sudah Dikirim' : 'Belum Dikirim',
-      konfirmasi: t.rsvp_status === 'Hadir' ? 'Hadir' : t.rsvp_status === 'Tidak Hadir' ? 'Tidak Hadir' : 'Belum Konfirmasi',
-      notes: t.phone || ''
-    }));
+    const tamuList = (tamu.results || []).map(t => {
+      let cat = 'Reguler';
+      let rel = `Keluarga ${wedding.groom_name || 'Pria'}`;
+      if (t.category) {
+        const match = t.category.match(/^([^(]+)(?:\(([^)]+)\))?$/);
+        if (match) {
+          const part1 = match[1].trim();
+          const part2 = match[2]?.trim();
+          if (['VIP', 'VVIP', 'Reguler'].includes(part1)) {
+            cat = part1;
+            if (part2) rel = part2;
+          } else if (part2 && ['VIP', 'VVIP', 'Reguler'].includes(part2)) {
+            cat = part2;
+            rel = part1;
+          } else {
+            rel = part1;
+          }
+        }
+      }
+
+      const isSent = t.status === 'Terkirim' || t.status === 'Sudah Dikirim';
+      return {
+        id: t.id,
+        name: t.name,
+        relationship: rel,
+        category: cat,
+        pax: t.pax || 1,
+        statusKirim: isSent ? 'Terkirim' : 'Belum Dikirim',
+        konfirmasi: t.rsvp_status === 'Hadir' ? 'Hadir' : (t.rsvp_status === 'Tidak Hadir' ? 'Tidak Hadir' : 'Belum Konfirmasi'),
+        notes: t.phone || ''
+      };
+    });
 
     // Auto-seed Timeline Items jika masih kosong
     let timelineRes = await db.prepare('SELECT * FROM timeline_items WHERE wedding_id = ? ORDER BY id ASC').bind(weddingId).all();
@@ -594,13 +621,17 @@ export async function onRequest(context) {
     return json({ success: true });
   }
 
-  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, undangan-souvenir)
-  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir'];
+  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, undangan-souvenir, after-nikah)
+  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir', 'afterNikah'];
   let routeModule = null;
   let routeItemId = null;
 
   if (path.startsWith('undangan-souvenir') || path.startsWith('undanganSouvenir')) {
     routeModule = 'undanganSouvenir';
+    const parts = path.split('/');
+    routeItemId = parts[1];
+  } else if (path.startsWith('after-nikah') || path.startsWith('afterNikah')) {
+    routeModule = 'afterNikah';
     const parts = path.split('/');
     routeItemId = parts[1];
   } else {
@@ -627,7 +658,8 @@ export async function onRequest(context) {
           wedding: 8,
           seserahan: 12,
           mahar: 5,
-          undanganSouvenir: 6
+          undanganSouvenir: 6,
+          afterNikah: 10
         };
         const maxAllowed = limits[mod] || 6;
         if ((countRes?.count || 0) >= maxAllowed) {
@@ -648,8 +680,9 @@ export async function onRequest(context) {
         if (item.purchased !== undefined) {
           status = item.purchased ? 'Lunas' : 'Pending';
         }
-        const vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? '';
-        const vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? '';
+        const vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? item.weight ?? '';
+        const vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? item.detail ?? '';
+        const notes = item.notes || item.detail || '';
 
         await db.prepare(`
           INSERT INTO budget_items (id, wedding_id, module, category, name, target_cost, actual_cost, paid_amount, status, vendor_name, vendor_contact, notes)
@@ -666,7 +699,7 @@ export async function onRequest(context) {
           status,
           vendorName,
           vendorContact,
-          item.notes || ''
+          notes
         ).run();
         return json({ success: true, id: newId });
       }
@@ -712,18 +745,20 @@ export async function onRequest(context) {
         }
 
         let vendorName = existing.vendor_name;
-        if (item.vendorName !== undefined || item.vendor_name !== undefined || item.purchasedBy !== undefined) {
-          vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? '';
+        if (item.vendorName !== undefined || item.vendor_name !== undefined || item.purchasedBy !== undefined || item.weight !== undefined) {
+          vendorName = item.vendorName ?? item.vendor_name ?? item.purchasedBy ?? item.weight ?? '';
         }
 
         let vendorContact = existing.vendor_contact;
-        if (item.vendorContact !== undefined || item.vendor_contact !== undefined || item.link !== undefined) {
-          vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? '';
+        if (item.vendorContact !== undefined || item.vendor_contact !== undefined || item.link !== undefined || item.detail !== undefined) {
+          vendorContact = item.vendorContact ?? item.vendor_contact ?? item.link ?? item.detail ?? '';
         }
 
         let notes = existing.notes;
         if (item.notes !== undefined) {
           notes = item.notes;
+        } else if (item.detail !== undefined && !item.link) {
+          notes = item.detail;
         }
 
         await db.prepare(`
@@ -832,17 +867,28 @@ export async function onRequest(context) {
       const item = await request.json();
       const newId = 'tamu_' + Date.now();
       const slug = (item.name || 'tamu').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      
+      let combinedCategory = item.category || 'Reguler';
+      if (item.relationship) {
+        combinedCategory = `${item.category || 'Reguler'} (${item.relationship})`;
+      }
+      
+      const initialStatus = (item.status === 'Terkirim' || item.statusKirim === 'Terkirim' || item.statusKirim === 'Sudah Dikirim') ? 'Terkirim' : 'Draft';
+      const initialRsvp = item.rsvpStatus || item.rsvp_status || item.konfirmasi || 'Pending';
+
       await db.prepare(`
         INSERT INTO tamu_undangan (id, wedding_id, name, category, pax, phone, slug, status, rsvp_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'Draft', 'Pending')
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).bind(
         newId,
         weddingId,
         item.name || 'Nama Tamu',
-        item.category || item.relationship || 'Teman',
+        combinedCategory,
         parseInt(item.pax) || 1,
         item.phone || item.notes || '',
-        slug
+        slug,
+        initialStatus,
+        (initialRsvp === 'Hadir' || initialRsvp === 'Tidak Hadir') ? initialRsvp : 'Pending'
       ).run();
       return json({ success: true, id: newId });
     }
@@ -855,7 +901,17 @@ export async function onRequest(context) {
       }
 
       const name = item.name ?? existing.name;
-      const category = item.category ?? item.relationship ?? existing.category;
+      
+      let category = existing.category;
+      if (item.category !== undefined || item.relationship !== undefined) {
+        const cat = item.category || (existing.category?.includes('VIP') ? 'VIP' : 'Reguler');
+        if (item.relationship) {
+          category = `${cat} (${item.relationship})`;
+        } else {
+          category = item.category || existing.category;
+        }
+      }
+
       const pax = item.pax !== undefined ? (parseInt(item.pax) || 1) : existing.pax;
       const phone = item.phone ?? item.notes ?? existing.phone;
       
@@ -863,10 +919,14 @@ export async function onRequest(context) {
       if (item.status !== undefined) {
         status = item.status;
       } else if (item.statusKirim !== undefined) {
-        status = item.statusKirim === 'Sudah Dikirim' ? 'Terkirim' : 'Draft';
+        status = (item.statusKirim === 'Terkirim' || item.statusKirim === 'Sudah Dikirim') ? 'Terkirim' : 'Draft';
       }
 
-      const rsvpStatus = item.rsvpStatus ?? item.rsvp_status ?? (item.konfirmasi !== undefined ? item.konfirmasi : existing.rsvp_status);
+      let rsvpStatus = existing.rsvp_status;
+      const incomingRsvp = item.rsvpStatus ?? item.rsvp_status ?? item.konfirmasi;
+      if (incomingRsvp !== undefined) {
+        rsvpStatus = (incomingRsvp === 'Hadir' || incomingRsvp === 'Tidak Hadir') ? incomingRsvp : 'Pending';
+      }
 
       await db.prepare(`
         UPDATE tamu_undangan

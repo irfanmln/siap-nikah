@@ -59,14 +59,15 @@ export default function TamuTab({
   });
 
   const totalPax = tamuUndangan.reduce((sum, t) => sum + (Number(t.pax) || 2), 0);
-  const sentCount = tamuUndangan.filter(t => t.statusKirim === 'Terkirim').length;
+  const sentCount = tamuUndangan.filter(t => t.statusKirim === 'Terkirim' || t.statusKirim === 'Sudah Dikirim').length;
   const confirmedHadir = tamuUndangan.filter(t => t.konfirmasi === 'Hadir').length;
   const hadirPax = tamuUndangan.filter(t => t.konfirmasi === 'Hadir').reduce((sum, t) => sum + (Number(t.pax) || 2), 0);
 
   const filteredGuests = tamuUndangan.filter(guest => {
+    const isSent = guest.statusKirim === 'Terkirim' || guest.statusKirim === 'Sudah Dikirim';
     if (filterRel !== 'Semua' && guest.relationship !== filterRel) return false;
-    if (filterStatus === 'Terkirim' && guest.statusKirim !== 'Terkirim') return false;
-    if (filterStatus === 'Belum Dikirim' && guest.statusKirim === 'Terkirim') return false;
+    if (filterStatus === 'Terkirim' && !isSent) return false;
+    if (filterStatus === 'Belum Dikirim' && isSent) return false;
     if (filterStatus === 'Hadir' && guest.konfirmasi !== 'Hadir') return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -145,14 +146,16 @@ export default function TamuTab({
 
   const handleToggleSent = async (item) => {
     const isCurrentlySent = item.statusKirim === 'Sudah Dikirim' || item.statusKirim === 'Terkirim';
-    const nextStatus = isCurrentlySent ? 'Belum Dikirim' : 'Sudah Dikirim';
+    const nextStatus = isCurrentlySent ? 'Belum Dikirim' : 'Terkirim';
     try {
       await updateTamu(item.id, {
         statusKirim: nextStatus,
         status: isCurrentlySent ? 'Draft' : 'Terkirim',
         name: item.name,
         pax: item.pax,
-        relationship: item.relationship
+        relationship: item.relationship,
+        category: item.category,
+        notes: item.notes
       }, activeActor);
       onRefresh();
     } catch (err) {
@@ -316,17 +319,22 @@ export default function TamuTab({
                     </td>
 
                     <td className="py-3 px-4">
-                      <button
-                        onClick={() => handleToggleSent(guest)}
-                        className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-xs font-medium transition cursor-pointer ${
-                          guest.statusKirim === 'Terkirim'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                        }`}
-                        title="Klik untuk mengubah status kirim"
-                      >
-                        <span>{guest.statusKirim === 'Terkirim' ? '✉️ Terkirim' : '⏳ Belum'}</span>
-                      </button>
+                      {(() => {
+                        const isSent = guest.statusKirim === 'Terkirim' || guest.statusKirim === 'Sudah Dikirim';
+                        return (
+                          <button
+                            onClick={() => handleToggleSent(guest)}
+                            className={`inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl text-xs font-medium transition cursor-pointer ${
+                              isSent
+                                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                            }`}
+                            title="Klik untuk mengubah status kirim"
+                          >
+                            <span>{isSent ? '✉️ Terkirim' : '⏳ Belum'}</span>
+                          </button>
+                        );
+                      })()}
                     </td>
 
                     <td className="py-3 px-4">
