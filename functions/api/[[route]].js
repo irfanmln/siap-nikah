@@ -421,18 +421,30 @@ export async function onRequest(context) {
       notes: i.notes || ''
     }));
 
-    const undanganSouvenir = allBudgets.filter(i => i.module === 'undanganSouvenir').map(i => ({
-      id: i.id,
-      type: i.category === 'Souvenir' ? 'Souvenir' : 'Undangan',
-      name: i.name,
-      detail: i.notes || '',
-      unitPrice: Number(i.target_cost) || 0,
-      quantity: 1,
-      totalPrice: Number(i.target_cost) || 0,
-      link: i.vendor_contact || '',
-      checked: i.status === 'Lunas',
-      notes: i.notes || ''
-    }));
+    const undanganSouvenir = allBudgets.filter(i => i.module === 'undanganSouvenir').map(i => {
+      const isSouvenir = (i.category || '').toLowerCase().includes('souvenir');
+      const pcsMatch = (i.name || '').match(/\((\d+)\s*pcs\)/i);
+      const qtyFromVendor = parseInt(i.vendor_name, 10);
+      const quantity = (!isNaN(qtyFromVendor) && qtyFromVendor > 0)
+        ? qtyFromVendor
+        : (pcsMatch ? parseInt(pcsMatch[1], 10) : 1);
+      const totalPrice = Number(i.target_cost) || 0;
+      const unitPrice = quantity > 1 && totalPrice > 0 ? Math.round(totalPrice / quantity) : totalPrice;
+
+      return {
+        id: i.id,
+        type: isSouvenir ? 'Souvenir' : 'Undangan',
+        category: isSouvenir ? 'Souvenir' : 'Undangan',
+        name: i.name,
+        detail: i.notes || '',
+        unitPrice: unitPrice,
+        quantity: quantity,
+        totalPrice: totalPrice,
+        link: i.vendor_contact || '',
+        checked: i.status === 'Lunas',
+        notes: i.notes || ''
+      };
+    });
 
     const afterNikah = allBudgets.filter(i => i.module === 'afterNikah').map(i => ({
       id: i.id,
@@ -646,7 +658,7 @@ export async function onRequest(context) {
           newId,
           weddingId,
           mod,
-          item.category || '',
+          item.category || item.type || '',
           item.name || 'Pos Anggaran',
           targetCost,
           actualCost,
@@ -667,7 +679,9 @@ export async function onRequest(context) {
           return json({ error: 'Item tidak ditemukan' }, 404);
         }
 
-        const category = item.category !== undefined ? item.category : existing.category;
+        const category = item.category !== undefined 
+          ? item.category 
+          : (item.type !== undefined ? item.type : existing.category);
         const name = item.name !== undefined ? item.name : existing.name;
 
         let targetCost = existing.target_cost;

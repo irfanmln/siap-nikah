@@ -107,14 +107,20 @@ export default function UndanganSouvenirTab({
     e.preventDefault();
     setSubmitting(true);
     try {
-      const q = Number(formData.quantity) || 0;
+      const q = Number(formData.quantity) || 1;
       const u = Number(formData.unitPrice) || 0;
+      const totalCost = q * u;
       const payload = {
         ...formData,
+        category: formData.type,
+        type: formData.type,
         quantity: q,
         unitPrice: u,
-        totalPrice: q * u,
-        targetCost: q * u
+        totalPrice: totalCost,
+        targetCost: totalCost,
+        actualCost: totalCost,
+        vendorName: String(q),
+        vendorContact: formData.link || ''
       };
       if (editingItem) {
         await updateUndangan(editingItem.id, payload, activeActor);
