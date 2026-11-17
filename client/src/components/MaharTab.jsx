@@ -301,7 +301,7 @@ export default function MaharTab({
                   <option value="Cincin Couple">Cincin Couple (Emas/Perak)</option>
                   <option value="Logam Mulia">Logam Mulia Emas Murni</option>
                   <option value="Uang Mahar">Uang Seri Mahar</option>
-                  <option value="Hias Mahar">Jasa Hias & Bingkai Mahar</option>
+                  <option value="Hias Mahar">Hias Mahar</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
               </div>

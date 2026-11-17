@@ -5,6 +5,7 @@ import {
   Circle,
   Plus,
   Trash2,
+  Edit2,
   Clock,
   User,
   ChevronRight,
@@ -38,9 +39,13 @@ export default function TimelineTab({
   const [selectedPhase, setSelectedPhase] = useState('Semua');
   const [selectedAssignee, setSelectedAssignee] = useState('Semua');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useModalBack(isModalOpen, () => setIsModalOpen(false));
+  useModalBack(isModalOpen, () => {
+    setIsModalOpen(false);
+    setEditingItem(null);
+  });
 
   const [formData, setFormData] = useState({
     phase: 'H-1 Bulan',
@@ -85,6 +90,7 @@ export default function TimelineTab({
       return;
     }
 
+    setEditingItem(null);
     setFormData({
       phase: selectedPhase === 'Semua' ? 'H-1 Bulan' : selectedPhase,
       title: '',
@@ -95,18 +101,37 @@ export default function TimelineTab({
     setIsModalOpen(true);
   };
 
+  const handleOpenEdit = (item, e) => {
+    e.stopPropagation();
+    setEditingItem(item);
+    setFormData({
+      phase: item.phase || 'H-1 Bulan',
+      title: item.title || '',
+      assignedTo: item.assigned_to || 'Bersama',
+      dueDate: item.due_date || '',
+      notes: item.notes || ''
+    });
+    setIsModalOpen(true);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
 
     try {
       setSubmitting(true);
-      const res = await addTimelineItem(formData, activeActor);
-      if (res.error) throw new Error(res.error);
+      if (editingItem) {
+        const res = await updateTimelineItem(editingItem.id, formData, activeActor);
+        if (res.error) throw new Error(res.error);
+      } else {
+        const res = await addTimelineItem(formData, activeActor);
+        if (res.error) throw new Error(res.error);
+      }
       setIsModalOpen(false);
+      setEditingItem(null);
       if (onRefresh) onRefresh(true);
     } catch (err) {
-      alert('Gagal menambah tugas: ' + err.message);
+      alert(`Gagal ${editingItem ? 'memperbarui' : 'menambah'} tugas: ` + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -318,14 +343,23 @@ export default function TimelineTab({
                         </div>
                       </div>
 
-                      {/* Delete Action Button */}
-                      <button
-                        onClick={(e) => handleDelete(item.id, e)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 text-stone-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition cursor-pointer shrink-0"
-                        title="Hapus checklist"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {/* Edit & Delete Action Buttons */}
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition shrink-0">
+                        <button
+                          onClick={(e) => handleOpenEdit(item, e)}
+                          className="p-1.5 text-stone-300 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition cursor-pointer"
+                          title="Ubah checklist"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDelete(item.id, e)}
+                          className="p-1.5 text-stone-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                          title="Hapus checklist"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -336,15 +370,17 @@ export default function TimelineTab({
         })}
       </div>
 
-      {/* 4. Modal Tambah Tugas */}
+      {/* 4. Modal Tambah / Edit Tugas */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-xs">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150">
             <h3 className="font-serif font-bold text-lg text-stone-900 mb-1">
-              Tambah Tugas Checklist
+              {editingItem ? 'Ubah Tugas Checklist' : 'Tambah Tugas Checklist'}
             </h3>
             <p className="text-xs text-stone-500 mb-4">
-              Tambahkan agenda persiapan khusus sesuai kebutuhan pernikahan Anda.
+              {editingItem 
+                ? 'Sesuaikan rincian tugas, tenggat waktu, dan penanggung jawab.' 
+                : 'Tambahkan agenda persiapan khusus sesuai kebutuhan pernikahan Anda.'}
             </p>
 
             <form onSubmit={handleSave} className="space-y-4">
@@ -422,7 +458,7 @@ export default function TimelineTab({
                   disabled={submitting}
                   className="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer disabled:opacity-50"
                 >
-                  {submitting ? 'Menyimpan...' : 'Simpan Tugas'}
+                  {submitting ? 'Menyimpan...' : (editingItem ? 'Simpan Perubahan' : 'Tambah Tugas')}
                 </button>
               </div>
             </form>
