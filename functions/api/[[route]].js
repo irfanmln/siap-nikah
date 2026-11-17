@@ -116,7 +116,7 @@ const DEFAULT_LEGAL_DOCUMENTS = [
   { category: 'kua', name: 'Fotokopi Akta Kelahiran & Ijazah Terakhir', description: 'Untuk pencocokan ejaan nama resmi di Buku Nikah' },
   { category: 'kua', name: 'Pasfoto Berlatar Belakang Biru (2x3 & 4x6)', description: 'Ukuran 2x3 (4 lembar) & 4x6 (2 lembar), pakaian rapi' },
   { category: 'kua', name: 'Sertifikat Elsimil & Keterangan Kesehatan', description: 'Pemeriksaan kesehatan & imunisasi TT dari Puskesmas' },
-  { category: 'kua', name: 'Bukti Pembayaran PNBP Nikah (Jika di Luar KUA)', description: 'Gratis di KUA saat jam kerja, Rp 600.000 jika di luar KUA/akhir pekan' }
+  { category: 'kua', name: 'Bukti Pembayaran PNBP Nikah', description: 'Biaya resmi Rp 600.000 disetor via bank / kode billing Simkah Kemenag' }
 ];
 
 // Template Pembagian Seragam & Panitia

@@ -189,7 +189,7 @@ export default function LegalDocTab({
           </div>
           <ul className="list-disc list-inside space-y-1 text-emerald-800/90 leading-relaxed pl-1">
             <li><strong>Waktu Pendaftaran:</strong> Paling lambat <strong>10 hari kerja</strong> sebelum akad nikah. Jika kurang dari 10 hari, diperlukan surat dispensasi dari Kantor Kecamatan.</li>
-            <li><strong>Biaya Resmi PNBP:</strong> <strong>Rp 0 (Gratis)</strong> jika akad di kantor KUA pada hari & jam kerja (Senin-Jumat 07.30 - 16.00). Biaya resmi <strong>Rp 600.000</strong> disetor via bank/kode billing jika akad di luar kantor KUA (di rumah/gedung) atau di akhir pekan.</li>
+            <li><strong>Biaya Administrasi & PNBP:</strong> Siapkan anggaran biaya resmi PNBP <strong>Rp 600.000</strong> yang disetor via bank / kode billing Simkah Kemenag, serta cadangan dana operasional/administrasi setempat agar persiapan biaya nikah aman dan terencana.</li>
             <li><strong>Pemeriksaan Kesehatan:</strong> Lakukan tes kesehatan di Puskesmas untuk mendapatkan <strong>Sertifikat Elsimil (BKKBN)</strong> dan imunisasi TT minimal 1 bulan sebelum hari H.</li>
           </ul>
         </div>
