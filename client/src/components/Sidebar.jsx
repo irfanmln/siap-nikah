@@ -22,7 +22,8 @@ import {
   CalendarCheck,
   Clock,
   FileText,
-  Shirt
+  Shirt,
+  Palmtree
 } from 'lucide-react';
 import { getDaysUntil, formatDate } from '../utils/formatters';
 
@@ -50,7 +51,8 @@ const NAV_SECTIONS = [
       { id: 'wedding', label: 'Vendor & Resepsi', icon: Store, badgeKey: 'wedding' },
       { id: 'seserahan', label: 'Seserahan & Hantaran', icon: Gift, badgeKey: 'seserahan' },
       { id: 'mahar', label: 'Mahar Pernikahan', icon: Coins, badgeKey: 'mahar' },
-      { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail, badgeKey: 'undangan' }
+      { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail, badgeKey: 'undangan' },
+      { id: 'honeymoon', label: 'Bulan Madu (Honeymoon)', icon: Palmtree, badgeKey: 'honeymoon' }
     ]
   },
   {

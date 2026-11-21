@@ -247,6 +247,33 @@ export async function deleteUndangan(id, actor) {
   return res.json();
 }
 
+// HONEYMOON
+export async function addHoneymoon(item, actor) {
+  const res = await fetch(`${API_BASE}/honeymoon`, {
+    method: 'POST',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function updateHoneymoon(id, item, actor) {
+  const res = await fetch(`${API_BASE}/honeymoon/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(actor),
+    body: JSON.stringify(item)
+  });
+  return res.json();
+}
+
+export async function deleteHoneymoon(id, actor) {
+  const res = await fetch(`${API_BASE}/honeymoon/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(actor)
+  });
+  return res.json();
+}
+
 // TAMU UNDANGAN
 export async function addTamu(item, actor) {
   const res = await fetch(`${API_BASE}/tamu`, {

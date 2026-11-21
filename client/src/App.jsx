@@ -13,7 +13,8 @@ import {
   CalendarCheck,
   Clock,
   FileText,
-  Shirt
+  Shirt,
+  Palmtree
 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import SettingsModal from './components/SettingsModal';
@@ -25,6 +26,7 @@ import SeserahanTab from './components/SeserahanTab';
 import MaharTab from './components/MaharTab';
 import WeddingTab from './components/WeddingTab';
 import UndanganSouvenirTab from './components/UndanganSouvenirTab';
+import HoneymoonTab from './components/HoneymoonTab';
 import TamuTab from './components/TamuTab';
 import SeragamTab from './components/SeragamTab';
 import LegalDocTab from './components/LegalDocTab';
@@ -53,6 +55,7 @@ const TABS = [
   { id: 'seserahan', label: 'Seserahan & Hantaran', icon: Gift },
   { id: 'mahar', label: 'Mahar Pernikahan', icon: Coins },
   { id: 'undangan', label: 'Undangan & Souvenir', icon: Mail },
+  { id: 'honeymoon', label: 'Bulan Madu (Honeymoon)', icon: Palmtree },
   { id: 'tamu', label: 'Daftar Tamu Undangan', icon: Users },
   { id: 'seragam', label: 'Rekap Seragam & Panitia', icon: Shirt },
   { id: 'legal', label: 'Dokumen KUA / Sipil', icon: FileText }
@@ -486,6 +489,7 @@ export default function App() {
           seserahan: `${db?.seserahan?.filter(s => s.purchased)?.length || 0}/${db?.seserahan?.length || 0}`,
           mahar: db?.mahar?.length,
           undangan: db?.undanganSouvenir?.length,
+          honeymoon: db?.honeymoon?.length,
           tamu: db?.tamuUndangan?.length,
           seragam: `${db?.seragam?.filter(s => s.status === 'Sudah Jahit')?.length || 0}/${db?.seragam?.length || 0}`,
           legal: `${db?.legalDocuments?.filter(d => d.status === 'Lengkap')?.length || 0}/${db?.legalDocuments?.length || 0}`
@@ -698,6 +702,20 @@ export default function App() {
               setVipFeaturePrompt(msg);
               setIsVipModalOpen(true);
             }}
+          />
+        )}
+
+        {activeTab === 'honeymoon' && (
+          <HoneymoonTab
+            honeymoon={db?.honeymoon}
+            activeActor={effectiveActor}
+            onRefresh={loadData}
+            isPremium={isPremium}
+            onRequireVip={(msg) => {
+              setVipFeaturePrompt(msg);
+              setIsVipModalOpen(true);
+            }}
+            activeWeddingId={activeWeddingId}
           />
         )}
 

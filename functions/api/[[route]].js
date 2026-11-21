@@ -40,7 +40,16 @@ const DEFAULT_BUDGET_TEMPLATES = [
   
   // Undangan & Souvenir
   { module: 'undanganSouvenir', category: 'Souvenir', name: 'Souvenir Tamu (300 pcs)', target_cost: 2500000 },
-  { module: 'undanganSouvenir', category: 'Cetak', name: 'Buku Tamu & Cetak Fisik', target_cost: 500000 }
+  { module: 'undanganSouvenir', category: 'Cetak', name: 'Buku Tamu & Cetak Fisik', target_cost: 500000 },
+
+  // Honeymoon (Bulan Madu)
+  { module: 'honeymoon', category: 'Akomodasi', name: 'Hotel / Resort (3-4 Malam)', target_cost: 4000000 },
+  { module: 'honeymoon', category: 'Transportasi', name: 'Tiket Pesawat / Kereta PP', target_cost: 3500000 },
+  { module: 'honeymoon', category: 'Kuliner', name: 'Romantic Dinner Pasangan', target_cost: 1200000 },
+  { module: 'honeymoon', category: 'Wisata & Rekreasi', name: 'Tiket Wisata, Atraksi & Spa', target_cost: 1500000 },
+  { module: 'honeymoon', category: 'Kuliner', name: 'Makan Harian & Jajan Pasutri', target_cost: 1500000 },
+  { module: 'honeymoon', category: 'Transportasi', name: 'Sewa Kendaraan (Mobil/Motor) & Bensin', target_cost: 1000000 },
+  { module: 'honeymoon', category: 'Oleh-oleh', name: 'Oleh-oleh Keluarga & Teman', target_cost: 1000000 }
 ];
 
 // Template Checklist Timeline Berdasarkan Waktu
@@ -388,7 +397,7 @@ export async function onRequest(context) {
     const logs = await db.prepare('SELECT * FROM activity_logs WHERE wedding_id = ? ORDER BY timestamp DESC LIMIT 50').bind(weddingId).all();
 
     // Mapping items by module with UI-compatible fields
-    const allBudgets = budgetItems.results || [];
+    let allBudgets = budgetItems.results || [];
     const seserahan = allBudgets.filter(i => i.module === 'seserahan').map(i => ({
       id: i.id,
       category: i.category || 'Pakaian',
@@ -450,6 +459,31 @@ export async function onRequest(context) {
         notes: i.notes || ''
       };
     });
+
+    // Auto-seed Honeymoon items jika masih kosong
+    let honeymoonExisting = allBudgets.filter(i => i.module === 'honeymoon');
+    if (honeymoonExisting.length === 0) {
+      for (const h of DEFAULT_BUDGET_TEMPLATES.filter(t => t.module === 'honeymoon')) {
+        await db.prepare(`
+          INSERT INTO budget_items (id, wedding_id, module, category, name, target_cost, actual_cost, paid_amount, status)
+          VALUES (?, ?, 'honeymoon', ?, ?, ?, 0, 0, 'Rencana')
+        `).bind('item_' + Math.random().toString(36).substring(2, 9), weddingId, h.category, h.name, h.target_cost).run();
+      }
+      const refreshedBudgets = await db.prepare('SELECT * FROM budget_items WHERE wedding_id = ?').bind(weddingId).all();
+      allBudgets = refreshedBudgets.results || [];
+      honeymoonExisting = allBudgets.filter(i => i.module === 'honeymoon');
+    }
+
+    const honeymoon = honeymoonExisting.map(i => ({
+      id: i.id,
+      category: i.category || 'Akomodasi',
+      name: i.name,
+      estimatedCost: Number(i.target_cost) || 0,
+      paidAmount: Number(i.paid_amount) || 0,
+      detail: i.vendor_contact || i.notes || '',
+      status: i.status || 'Rencana',
+      notes: i.notes || ''
+    }));
 
     const afterNikah = allBudgets.filter(i => i.module === 'afterNikah').map(i => ({
       id: i.id,
@@ -584,6 +618,7 @@ export async function onRequest(context) {
       mahar,
       wedding: weddingVendor,
       undanganSouvenir,
+      honeymoon,
       tamuUndangan: tamuList,
       afterNikah,
       timeline: timelineRes.results || [],
@@ -621,8 +656,8 @@ export async function onRequest(context) {
     return json({ success: true });
   }
 
-  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, undangan-souvenir, after-nikah)
-  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir', 'afterNikah'];
+  // 6. Generic CRUD Helper untuk Budget Items (seserahan, mahar, wedding, undangan-souvenir, honeymoon, after-nikah)
+  const budgetModules = ['seserahan', 'mahar', 'wedding', 'undanganSouvenir', 'honeymoon', 'afterNikah'];
   let routeModule = null;
   let routeItemId = null;
 
@@ -659,6 +694,7 @@ export async function onRequest(context) {
           seserahan: 12,
           mahar: 5,
           undanganSouvenir: 6,
+          honeymoon: 8,
           afterNikah: 10
         };
         const maxAllowed = limits[mod] || 6;
