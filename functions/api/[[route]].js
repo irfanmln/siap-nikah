@@ -523,6 +523,7 @@ export async function onRequest(context) {
         pax: t.pax || 1,
         statusKirim: isSent ? 'Terkirim' : 'Belum Dikirim',
         konfirmasi: t.rsvp_status === 'Hadir' ? 'Hadir' : (t.rsvp_status === 'Tidak Hadir' ? 'Tidak Hadir' : 'Belum Konfirmasi'),
+        phone: t.phone || '',
         notes: t.phone || ''
       };
     });

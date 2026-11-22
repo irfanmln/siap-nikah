@@ -10,7 +10,9 @@ import {
   CheckCircle,
   Share2,
   MessageCircle,
-  UserCheck
+  UserCheck,
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { addTamu, updateTamu, deleteTamu } from '../utils/api';
 import { useModalBack } from '../utils/useModalBack';
@@ -55,6 +57,7 @@ export default function TamuTab({
     pax: 2,
     statusKirim: 'Belum Dikirim',
     konfirmasi: 'Belum Konfirmasi',
+    phone: '',
     notes: ''
   });
 
@@ -96,6 +99,7 @@ export default function TamuTab({
       pax: 2,
       statusKirim: 'Belum Dikirim',
       konfirmasi: 'Belum Konfirmasi',
+      phone: '',
       notes: ''
     });
     setIsModalOpen(true);
@@ -110,6 +114,7 @@ export default function TamuTab({
       pax: item.pax || 2,
       statusKirim: item.statusKirim || 'Belum Dikirim',
       konfirmasi: item.konfirmasi || 'Belum Konfirmasi',
+      phone: item.phone || item.notes || '',
       notes: item.notes || ''
     });
     setIsModalOpen(true);
@@ -163,13 +168,61 @@ export default function TamuTab({
     }
   };
 
-  const handleShareWhatsApp = (item) => {
+  const handleShareWhatsApp = async (item) => {
     const groom = metadata?.groom || 'Irfan';
     const bride = metadata?.bride || 'Kania';
-    const text = encodeURIComponent(
-      `Assalamu'alaikum Wr. Wb.\n\nKepada Yth. Bpk/Ibu/Saudara/i *${item.name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Anda untuk menghadiri pernikahan kami:\n*${groom} & ${bride}*\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila berkenan hadir memberikan doa restu.\n\nTerima kasih.`
-    );
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+    
+    // Personalized digital invitation link
+    const baseUrl = 'https://undangan-digital-kappa-one.vercel.app/template-royal-garden.html';
+    const guestParam = encodeURIComponent((item.name || '').trim().replace(/\s+/g, '-'));
+    const invitationLink = `${baseUrl}?to=${guestParam}`;
+
+    const message = `Assalamu'alaikum Wr. Wb.
+
+Kepada Yth. Bpk/Ibu/Saudara/i *${item.name}*,
+
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
+
+*${groom} & ${bride}*
+
+Informasi lengkap mengenai waktu, lokasi, dan konfirmasi kehadiran dapat dilihat melalui tautan undangan digital berikut:
+${invitationLink}
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+
+Terima kasih atas perhatian dan doa restunya.
+Wassalamu'alaikum Wr. Wb.
+
+— *${groom} & ${bride}*`;
+
+    let cleanPhone = (item.phone || item.notes || '').replace(/[^0-9]/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '62' + cleanPhone.slice(1);
+    }
+
+    const waUrl = cleanPhone 
+      ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+    window.open(waUrl, '_blank');
+
+    // Otomatis tandai Terkirim jika belum
+    if (item.statusKirim !== 'Terkirim') {
+      try {
+        await updateTamu(item.id, {
+          name: item.name,
+          category: item.category,
+          relationship: item.relationship,
+          pax: item.pax,
+          phone: item.phone || item.notes || '',
+          statusKirim: 'Terkirim',
+          konfirmasi: item.konfirmasi
+        }, activeActor);
+        if (onRefresh) onRefresh();
+      } catch (err) {
+        console.error('Auto status update error:', err);
+      }
+    }
   };
 
   return (
@@ -194,13 +247,25 @@ export default function TamuTab({
             Manajemen daftar tamu keluarga {groom}, keluarga {bride}, sahabat, rekan kerja, dan estimasi porsi pax
           </p>
         </div>
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm rounded-2xl shadow-md transition hover:shadow-lg cursor-pointer shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Tambah Tamu Undangan</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://undangan-digital-kappa-one.vercel.app/builder.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center space-x-1.5 px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs rounded-2xl border border-stone-200/80 transition cursor-pointer shrink-0"
+            title="Buka Designer & Template Undangan Digital"
+          >
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <span>Desain Undangan</span>
+          </a>
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm rounded-2xl shadow-md transition hover:shadow-lg cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Tambah Tamu Undangan</span>
+          </button>
+        </div>
       </div>
 
       {/* Top 4 Summary Cards */}
@@ -354,13 +419,24 @@ export default function TamuTab({
                     </td>
 
                     <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end space-x-1 opacity-70 group-hover:opacity-100 transition">
+                      <div className="flex items-center justify-end space-x-1.5 opacity-90 group-hover:opacity-100 transition">
                         <button
                           onClick={() => handleShareWhatsApp(guest)}
-                          className="p-1.5 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition cursor-pointer"
-                          title="Buka template WhatsApp undangan"
+                          className="inline-flex items-center space-x-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-semibold transition cursor-pointer"
+                          title="Kirim Undangan Digital via WhatsApp"
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>Kirim WA</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            const link = `https://undangan-digital-kappa-one.vercel.app/template-royal-garden.html?to=${encodeURIComponent((guest.name || '').trim().replace(/\s+/g, '-'))}`;
+                            window.open(link, '_blank');
+                          }}
+                          className="p-1.5 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition cursor-pointer"
+                          title="Pratinjau Undangan Digital Tamu Ini"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleOpenEdit(guest)}
@@ -425,6 +501,19 @@ export default function TamuTab({
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-600 uppercase tracking-wider mb-1">
+                  Nomor WhatsApp / HP (Opsional)
+                </label>
+                <input
+                  type="tel"
+                  placeholder="Contoh: 08123456789 atau 628123456789"
+                  value={formData.phone}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rose-400 font-mono"
                 />
               </div>
 
