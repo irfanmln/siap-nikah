@@ -42,6 +42,22 @@ export default function TamuTab({
   const [filterRel, setFilterRel] = useState('Semua');
   const [filterStatus, setFilterStatus] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState(() => {
+    return localStorage.getItem('wedding_active_template') || 'template-1';
+  });
+
+  const handleTemplateChange = (tpl) => {
+    setSelectedTemplate(tpl);
+    localStorage.setItem('wedding_active_template', tpl);
+  };
+
+  const getInvitationUrl = (guestName) => {
+    const baseUrl = selectedTemplate === 'template-2'
+      ? 'https://undangan-digital-kappa-one.vercel.app/template-royal-garden.html'
+      : 'https://undangan-digital-kappa-one.vercel.app';
+    const guestParam = encodeURIComponent((guestName || '').trim().replace(/\s+/g, '-'));
+    return `${baseUrl}?to=${guestParam}`;
+  };
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -169,13 +185,11 @@ export default function TamuTab({
   };
 
   const handleShareWhatsApp = async (item) => {
-    const groom = metadata?.groom || 'Irfan';
-    const bride = metadata?.bride || 'Kania';
+    const groomName = metadata?.groom && metadata.groom !== 'Pria' ? metadata.groom : (metadata?.groom || 'Irfan');
+    const brideName = metadata?.bride && metadata.bride !== 'Wanita' ? metadata.bride : (metadata?.bride || 'Kania');
     
     // Personalized digital invitation link
-    const baseUrl = 'https://undangan-digital-kappa-one.vercel.app/template-royal-garden.html';
-    const guestParam = encodeURIComponent((item.name || '').trim().replace(/\s+/g, '-'));
-    const invitationLink = `${baseUrl}?to=${guestParam}`;
+    const invitationLink = getInvitationUrl(item.name);
 
     const message = `Assalamu'alaikum Wr. Wb.
 
@@ -183,7 +197,7 @@ Kepada Yth. Bpk/Ibu/Saudara/i *${item.name}*,
 
 Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
 
-*${groom} & ${bride}*
+*${groomName} & ${brideName}*
 
 Informasi lengkap mengenai waktu, lokasi, dan konfirmasi kehadiran dapat dilihat melalui tautan undangan digital berikut:
 ${invitationLink}
@@ -193,7 +207,7 @@ Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i
 Terima kasih atas perhatian dan doa restunya.
 Wassalamu'alaikum Wr. Wb.
 
-— *${groom} & ${bride}*`;
+— *${groomName} & ${brideName}*`;
 
     let cleanPhone = (item.phone || item.notes || '').replace(/[^0-9]/g, '');
     if (cleanPhone.startsWith('0')) {
@@ -325,6 +339,35 @@ Wassalamu'alaikum Wr. Wb.
             ))}
           </div>
 
+          {/* Template invitation selector */}
+          <div className="flex items-center bg-stone-100 p-1 rounded-2xl text-xs">
+            <span className="text-[11px] text-stone-400 font-medium px-2">Desain Link:</span>
+            <button
+              type="button"
+              onClick={() => handleTemplateChange('template-1')}
+              className={`px-2.5 py-1 rounded-xl text-xs font-medium transition cursor-pointer ${
+                selectedTemplate === 'template-1'
+                  ? 'bg-rose-500 text-white shadow-xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+              title="Kirim link Template 1 (Botanical Vintage)"
+            >
+              Template 1
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTemplateChange('template-2')}
+              className={`px-2.5 py-1 rounded-xl text-xs font-medium transition cursor-pointer ${
+                selectedTemplate === 'template-2'
+                  ? 'bg-rose-500 text-white shadow-xs font-semibold'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+              title="Kirim link Template 2 (Royal Garden)"
+            >
+              Template 2
+            </button>
+          </div>
+
         </div>
 
         {/* Search */}
@@ -430,7 +473,7 @@ Wassalamu'alaikum Wr. Wb.
                         </button>
                         <button
                           onClick={() => {
-                            const link = `https://undangan-digital-kappa-one.vercel.app/template-royal-garden.html?to=${encodeURIComponent((guest.name || '').trim().replace(/\s+/g, '-'))}`;
+                            const link = getInvitationUrl(guest.name);
                             window.open(link, '_blank');
                           }}
                           className="p-1.5 text-stone-500 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition cursor-pointer"
