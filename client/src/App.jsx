@@ -217,6 +217,19 @@ export default function App() {
     async function initAuth() {
       try {
         setAuthLoading(true);
+
+        // Check if redirected from Google OAuth with access_token in hash
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token=')) {
+          const params = new URLSearchParams(hash.substring(1));
+          const accessToken = params.get('access_token');
+          if (accessToken) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            await handleAuthSuccess({ type: 'google_token', accessToken });
+            return;
+          }
+        }
+
         const authData = await fetchCurrentUserApi();
         if (authData?.user) {
           setUser(authData.user);
@@ -330,6 +343,8 @@ export default function App() {
       let result;
       if (payload.type === 'google') {
         result = await loginWithGoogleApi(payload.credential);
+      } else if (payload.type === 'google_token') {
+        result = await loginWithGoogleApi(null, payload.accessToken);
       } else {
         result = payload.data;
       }

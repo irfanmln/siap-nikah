@@ -25,11 +25,12 @@ export function setActiveWeddingId(weddingId) {
 }
 
 // AUTH API
-export async function loginWithGoogleApi(credential) {
+export async function loginWithGoogleApi(credential, accessToken) {
+  const payload = credential ? { credential } : { accessToken };
   const res = await fetch(`${API_BASE}/auth/google`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ credential })
+    body: JSON.stringify(payload)
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

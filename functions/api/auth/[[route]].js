@@ -30,13 +30,31 @@ export async function onRequest(context) {
   // 1. POST /api/auth/google (Google Login & Auto Registration)
   if (path === 'google' && request.method === 'POST') {
     try {
-      const { credential } = await request.json();
-      if (!credential) {
+      const body = await request.json();
+      const { credential, accessToken } = body;
+      if (!credential && !accessToken) {
         return json({ error: 'Credential Google diperlukan' }, 400);
       }
 
       // Verifikasi token ke Google
-      const googleUser = await verifyGoogleIdToken(credential, env.GOOGLE_CLIENT_ID);
+      let googleUser;
+      if (credential) {
+        googleUser = await verifyGoogleIdToken(credential, env.GOOGLE_CLIENT_ID);
+      } else if (accessToken) {
+        const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        });
+        if (!userInfoRes.ok) {
+          throw new Error('Akses Google tidak valid atau telah kedaluwarsa');
+        }
+        const info = await userInfoRes.json();
+        googleUser = {
+          googleId: info.sub,
+          email: info.email,
+          name: info.name || info.email.split('@')[0],
+          picture: info.picture || ''
+        };
+      }
       
       // Cek apakah user sudah ada di database
       let user = await db.prepare('SELECT * FROM users WHERE email = ?')
